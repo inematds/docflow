@@ -1,6 +1,20 @@
 # docflow
 
+[![docflow — tema vira documentário](guia/assets/banner.jpg)](https://inematds.github.io/docflow/guia/)
+
+**🇧🇷 [Português](README.md) · 🇺🇸 [English](README.en.md) · 🇪🇸 [Español](README.es.md)**
+
 **Tema → documentário curto narrado → YouTube, sem passo manual.**
+
+## O que é
+
+O docflow é uma ferramenta de linha de comando que cria documentários curtos narrados, do tipo usado em canais "dark" do YouTube, em que não aparece ninguém. Você responde 6 perguntas num arquivo (tema, estilo, duração, duração de cada cena, formato e referências) e ele faz o resto: escreve o roteiro, gera as imagens e os vídeos de cada cena, narra, monta com música e transições e publica no YouTube. Ele recria, de forma automática, um processo que normalmente se faz à mão no ChatGPT, no Google Flow e no CapCut. Para usar, você precisa de Linux com Python, ffmpeg e o Codex.
+
+## 📖 Guia de uso
+
+Guia completo (landing + passo a passo): **https://inematds.github.io/docflow/guia/**
+
+## De onde veio
 
 O docflow automatiza o processo de "canal dark" (documentário sem rosto) mostrado num vídeo
 tutorial. Nele, tudo era feito à mão:
@@ -14,7 +28,7 @@ tutorial. Nele, tudo era feito à mão:
 
 Aqui cada etapa é um comando, e o motor de imagem e vídeo pode ser trocado.
 
-Versão: **0.1.0**
+Versão: **0.2.0**
 
 ---
 
@@ -92,7 +106,12 @@ motores de voz e música na próxima versão, pelo mesmo robô.
 ./docflow tudo temas/egito.yaml          # roteiro → gerar → narrar → montar
 ./docflow publicar temas/egito.yaml      # yt-pubx em dry-run: título, descrição, tags, thumb
 ./docflow publicar temas/egito.yaml --enviar   # sobe de verdade (depois de conferir)
+./docflow descricao temas/egito.yaml --video <URL>   # reaplica a descrição num vídeo já publicado
 ```
+
+A descrição do YouTube sai com um rodapé automático: o projeto (link do repo), as ferramentas e
+APIs usadas em cada etapa (conforme o motor), o crédito da música e a divulgação do
+**INEMA.CLUB**, plataforma de educação gratuita.
 
 Cada etapa também roda sozinha (`roteiro`, `gerar`, `narrar`, `montar`). Todas podem ser
 repetidas: refazem só o que falta. `roteiro --refazer` pede um roteiro novo ao Codex.

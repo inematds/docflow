@@ -9,6 +9,7 @@ CapCut -> YouTube) sem passos manuais:
   narrar    uma fala por cena (inemavox, local) -> encaixa no tempo de cada cena
   montar    ffmpeg faz o papel do CapCut: tempo, transição, fades, ambiente, música
   estatica  troca o clipe de IA de uma cena pela imagem com zoom lento (--cenas 6)
+  descricao gera a descrição com o rodapé (projeto, APIs, INEMA.CLUB); --video URL aplica
   publicar  yt-pubx (dry-run por padrão; --enviar sobe de verdade)
   tudo      roteiro -> gerar -> narrar -> montar (para antes de publicar)
 
@@ -22,7 +23,7 @@ import yaml
 
 RAIZ = Path(__file__).resolve().parent
 SAIDA = Path.home() / 'projetos/output/docflow'
-VERSAO = '0.1.0'
+VERSAO = '0.2.0'
 os.environ.setdefault('NODE_PATH', str(Path.home() / '.npm-global/lib/node_modules'))
 
 
@@ -154,6 +155,50 @@ def cmd_montar(t, d):
 
 
 # ---------------------------------------------------------------- 5. publicar
+MOTORES = {
+    'agnes': ['Imagens: Agnes AI (agnes-image-2.1-flash), por API',
+              'Vídeo de cada cena: Agnes AI (agnes-video-v2.0, imagem → vídeo), por API'],
+    'flow': ['Imagens e vídeos: Google Flow (agente), automatizado no navegador'],
+}
+
+
+def descricao(p, t):
+    """Descrição do YouTube = texto do roteiro + como foi feito (projeto, APIs) + INEMA.CLUB."""
+    musica = Path(os.path.expanduser(t.get('musica', ''))).stem
+    m = re.match(r'freesound_(\d+)_(.*)', musica)
+    credito = f'"{m.group(2).replace("_", " ")}" (Freesound #{m.group(1)})' if m else musica
+    linhas = [p['youtube']['descricao'].strip(), '',
+              '🛠️ Como este vídeo foi feito',
+              'Produzido de ponta a ponta pelo docflow, projeto aberto do INEMA que transforma '
+              'um tema em documentário curto narrado: https://github.com/inematds/docflow',
+              '• Roteiro, texto da narração e prompts: Codex (OpenAI), pela assinatura',
+              *('• ' + x for x in MOTORES.get(t.get('motor', 'agnes'), [])),
+              f'• Narração: inemavox, TTS local (chatterbox, voz {t.get("voz", "nei")})',
+              *([f'• Música: {credito}'] if musica else []),
+              '• Montagem: ffmpeg, local',
+              '• Publicação: YouTube Data API, via yt-pubx (https://github.com/inematds/yt-pubx)',
+              '',
+              '📚 INEMA.CLUB: plataforma de educação gratuita, com cursos, guias e projetos '
+              'abertos de inteligência artificial. Acesse: https://inema.club']
+    return '\n'.join(linhas)
+
+
+def cmd_descricao(t, d, video):
+    """Atualiza a descrição de um vídeo já publicado com o rodapé do docflow."""
+    texto = descricao(plano(d), t)
+    (d / 'descricao.txt').write_text(texto + '\n')
+    if not video:
+        print(texto)
+        log(f'descricao: salva em {d / "descricao.txt"} (passe --video URL para aplicar)')
+        return
+    yt = Path.home() / 'projetos/yt-pubx/yt-pubx'
+    r = subprocess.run([str(yt), 'atualizar', video, '--canal', t.get('canal', 'lives1'),
+                        '--description-arquivo', str(d / 'descricao.txt')],
+                       capture_output=True, text=True)
+    print(r.stdout[-800:], r.stderr[-800:])
+    if r.returncode:
+        sys.exit('descricao: o yt-pubx recusou a atualização')
+
 def cmd_publicar(t, d, enviar=False):
     p = plano(d)
     final = d / 'final.mp4'
@@ -169,7 +214,7 @@ def cmd_publicar(t, d, enviar=False):
     else:
         y = p['youtube']
         cmd = [str(yt), 'publicar', str(final), '--canal', t.get('canal', 'lives1'),
-               '--title', y['titulo'], '--description', y['descricao'],
+               '--title', y['titulo'], '--description', descricao(p, t),
                '--tags', ','.join(y['tags']), '--thumb-arte', str(d / f'imagens/{int(t.get("thumb_cena", 1)):03d}.png'),
                '--categoria', '27', '--dry-run']
     log(f'publicar: yt-pubx · canal {t.get("canal", "lives1")} · ' + ('ENVIANDO' if enviar else 'dry-run'))
@@ -187,11 +232,12 @@ def main():
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--version', action='version', version=VERSAO)
     ap.add_argument('etapa', choices=['roteiro', 'gerar', 'narrar', 'montar', 'publicar', 'tudo',
-                                      'estatica', 'flow-login'])
+                                      'estatica', 'descricao', 'flow-login'])
     ap.add_argument('tema', nargs='?', help='temas/<x>.yaml')
     ap.add_argument('--motor', help='flow | agnes (padrão: o do tema.yaml)')
     ap.add_argument('--refazer', action='store_true', help='refaz o roteiro')
     ap.add_argument('--cenas', help='estatica: números das cenas, ex. 6 ou 2,6')
+    ap.add_argument('--video', help='descricao: URL do vídeo já publicado')
     ap.add_argument('--enviar', action='store_true', help='publicar de verdade (sem dry-run)')
     a = ap.parse_args()
 
@@ -213,6 +259,8 @@ def main():
         cmd_montar(t, d)
     if a.etapa == 'estatica':
         cmd_estatica(t, d, [int(x) for x in (a.cenas or '').split(',') if x])
+    if a.etapa == 'descricao':
+        cmd_descricao(t, d, a.video)
     if a.etapa == 'publicar':
         cmd_publicar(t, d, a.enviar)
     log(f'[{a.etapa}] {time.time() - t0:.0f}s')

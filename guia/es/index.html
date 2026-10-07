@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>docflow — un tema se convierte en documental narrado en YouTube</title>
+<meta name="description" content="docflow convierte un tema en un documental corto narrado y lo publica en YouTube: guion en Codex, imágenes y video con Google Flow o con la API de Agnes, narración local, montaje en ffmpeg y subida con yt-pubx.">
+<link rel="alternate" hreflang="pt-BR" href="https://inematds.github.io/docflow/guia/">
+<link rel="alternate" hreflang="en" href="https://inematds.github.io/docflow/guia/en/">
+<link rel="alternate" hreflang="es" href="https://inematds.github.io/docflow/guia/es/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c10; --bg2:#14141b; --card:#16161e; --line:#272730;
+    --txt:#e9e9ee; --mut:#9a9aa6; --amb:#E2A23B; --amb2:#f0c070; --sky:#38bdf8; --pro:#cbd5e1;
+    color-scheme:dark;
+  }
+  body.light{
+    --bg:#f6f7f9; --bg2:#eceef2; --card:#ffffff; --line:#e1e3ea;
+    --txt:#1a1a22; --mut:#5b5b68; --amb:#b9791d; --amb2:#a16207; --sky:#0369a1; --pro:#b45309;
+    color-scheme:light;
+  }
+  body.light .hero .glow{opacity:.5}
+  body.light pre{background:#0e0e14;color:#d6d6e0}
+  body.light pre .c{color:#8a8a98}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:Sora,sans-serif;line-height:1.15;margin:0}
+  a{color:var(--amb);text-decoration:none}
+  code,pre{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 22px}
+  .mut{color:var(--mut)} .amb{color:var(--amb)}
+  .chip{display:inline-block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amb);font-weight:600;font-family:Sora}
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);background:rgba(12,12,16,.78);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:22px;height:60px}
+  nav .brand{display:flex;align-items:center;gap:8px;font-family:Sora;font-weight:800;letter-spacing:-.02em;color:var(--amb)}
+  nav .brand .emoji{font-size:1.25rem}
+  nav .sep{color:var(--mut);opacity:.45}
+  nav .inema{color:var(--sky);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .inema:hover{filter:brightness(1.15)}
+  nav .pro{color:var(--pro);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .pro:hover{filter:brightness(1.15)}
+  nav .clubpro{display:inline-flex;align-items:center;gap:6px}
+  nav .links{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:.92rem}
+  nav .links a.sec{color:var(--mut)} nav .links a.sec:hover{color:var(--txt)}
+  .lang{display:inline-flex;gap:2px;font-family:Sora;font-size:.78rem}
+  .lang a{color:var(--mut);padding:.2em .45em;border-radius:6px} .lang a.on{color:var(--amb);background:rgba(226,162,59,.12)}
+  .tgl{background:var(--bg2);border:1px solid var(--line);color:var(--txt);width:38px;height:38px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem}
+  .tgl:hover{border-color:var(--amb)}
+  .btn{display:inline-block;background:var(--amb);color:#1a1206;font-weight:600;padding:.6em 1.05em;border-radius:10px;font-family:Sora}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  @media(max-width:760px){nav .links a.sec{display:none}}
+  @media(max-width:520px){nav .wrap{gap:8px;padding:8px 14px;height:auto;flex-wrap:wrap} nav .links{gap:8px;margin-left:0;width:100%;justify-content:space-between} nav .btn{padding:.45em .7em;font-size:.82rem} .tgl{width:34px;height:34px}}
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero .glow{position:absolute;inset:-40% -20% auto auto;width:70%;height:600px;background:radial-gradient(closest-side,rgba(226,162,59,.22),transparent 70%);pointer-events:none}
+  .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:74px 22px}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.025em}
+  .hero p.lead{font-size:1.18rem;color:var(--mut);margin:1.1em 0 1.6em;max-width:34ch}
+  .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .hero figure{margin:0;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000}
+  .hero figure img{width:100%;display:block}
+  .resumo{padding:38px 0 34px;border-bottom:1px solid var(--line)}
+  .resumo p{font-size:1.12rem;line-height:1.7;max-width:74ch;margin:.55em 0 0}
+  @media(max-width:780px){.hero .wrap{grid-template-columns:1fr;padding:48px 22px}}
+  section{padding:62px 0;border-bottom:1px solid var(--line)}
+  section h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;letter-spacing:-.02em}
+  section .sub{color:var(--mut);margin:.6em 0 2em;max-width:62ch}
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g3,.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:540px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card h3{font-size:1.05rem;margin-bottom:.4em}
+  .card p{color:var(--mut);font-size:.92rem;margin:0}
+  .num{display:inline-flex;width:30px;height:30px;align-items:center;justify-content:center;border-radius:8px;background:rgba(226,162,59,.14);color:var(--amb);font-family:Sora;font-weight:800;font-size:.9rem;margin-bottom:.7em}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .flow span{background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:.45em .9em;font-size:.85rem;font-family:Sora;font-weight:600}
+  .flow .arr{color:var(--amb);border:none;background:none;padding:0 .1em}
+  pre{background:#0a0a0e;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;font-size:.86rem;line-height:1.6;color:#d6d6e0}
+  pre .c{color:#6f6f7c} pre .k{color:var(--amb2)} pre .s{color:#9ece6a}
+  .step{display:grid;grid-template-columns:46px minmax(0,1fr);gap:16px;margin-bottom:26px}
+  .step>div,.card{min-width:0}
+  p code,li code,td code{overflow-wrap:anywhere}
+  .step .b{width:46px;height:46px;border-radius:12px;background:var(--amb);color:#1a1206;font-family:Sora;font-weight:800;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:1.12rem;margin-bottom:.3em}
+  .step p{color:var(--mut);margin:.2em 0 .7em}
+  .ex{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:680px){.ex{grid-template-columns:1fr}}
+  .ex figure{margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+  .ex figure img{width:100%;display:block}
+  .ex figcaption{padding:12px 14px;font-size:.88rem;color:var(--mut);background:var(--card)}
+  .phase{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .phase:last-child{border:none}
+  .phase .tag{flex:0 0 92px;font-family:Sora;font-weight:800;color:var(--amb)}
+  .phase .d strong{display:block;margin-bottom:.2em}
+  .phase .d span{color:var(--mut);font-size:.92rem}
+  footer{padding:46px 0;text-align:center;color:var(--mut);font-size:.9rem}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.3em .8em;font-size:.78rem;color:var(--mut);margin:0 4px}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><span class="emoji">🎬</span> docflow</a>
+  <span class="sep">|</span>
+  <span class="clubpro">
+    <a class="inema" href="https://inema.club" target="_blank" rel="noopener">INEMA.CLUB</a>
+    <span class="sep">-</span>
+    <a class="pro" href="https://inema.pro" target="_blank" rel="noopener">PRO</a>
+  </span>
+  <div class="links">
+    <a class="sec" href="#oque">Qué es</a>
+    <a class="sec" href="#fluxo">Cómo funciona</a>
+    <a class="sec" href="#guia">Guía de uso</a>
+    <a class="sec" href="#exemplos">Ejemplo</a>
+    <a class="sec" href="#roadmap">Roadmap</a>
+    <span class="lang"><a href="../">PT</a><a href="../en/">EN</a><a class="on" href="./">ES</a></span>
+    <button class="tgl" id="themeToggle" aria-label="Cambiar tema" title="Cambiar tema">🌙</button>
+    <a class="btn" href="https://github.com/inematds/docflow" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="top">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div>
+      <span class="chip">Canal dark · documental sin rostro</span>
+      <h1>Del tema a YouTube, <span class="amb">sin pasos manuales</span></h1>
+      <p class="lead">Tú escribes el tema en 6 líneas. docflow hace el guion, las imágenes, los videos, la narración, el montaje y la publicación.</p>
+      <div class="cta">
+        <a class="btn" href="#guia">Empezar la guía</a>
+        <a class="btn ghost" href="https://github.com/inematds/docflow" target="_blank" rel="noopener">Ver en GitHub</a>
+      </div>
+    </div>
+    <figure><img src="../assets/banner-es.jpg" alt="Banner de docflow: un tema se convierte en documental"></figure>
+  </div>
+</header>
+
+<section id="resumo" class="resumo"><div class="wrap">
+  <span class="chip">En resumen</span>
+  <p>docflow es una herramienta de línea de comandos que crea documentales cortos narrados, del tipo que se usa en los canales "dark" de YouTube, donde no aparece nadie. Respondes 6 preguntas en un archivo (tema, estilo, duración, duración de cada escena, formato y referencias) y él hace el resto: escribe el guion, genera las imágenes y los videos de cada escena, narra, monta con música y transiciones y publica en YouTube. Recrea, de forma automática, un proceso que normalmente se hace a mano en ChatGPT, en Google Flow y en CapCut. Para usarlo, necesitas Linux con Python, ffmpeg y Codex.</p>
+</div></section>
+
+<section id="oque"><div class="wrap">
+  <span class="chip">Qué es</span>
+  <h2>Un proceso manual de 6 etapas se convirtió en un comando</h2>
+  <p class="sub">El punto de partida fue un tutorial de canal dark: GPT para el guion, Google Flow para imágenes y videos, AI Studio para la voz, Flow Music para la banda sonora, CapCut para el montaje y subida manual. docflow hace las mismas etapas solo.</p>
+  <figure style="margin:0 0 26px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000"><img src="../assets/banner-grade-es.jpg" alt="Las seis etapas de docflow: guion, imágenes, video, narración, montaje y YouTube" loading="lazy" style="width:100%;display:block"></figure>
+  <div class="grid g3">
+    <div class="card"><h3>📝 El "flow" del guion</h3><p>Las mismas 6 preguntas del tutorial, respondidas en un archivo <code>tema.yaml</code>. Codex (con tu suscripción) devuelve guion, narración, prompts de imagen y de video numerados, prompt de música y título, descripción y etiquetas.</p></div>
+    <div class="card"><h3>🔁 Motor intercambiable</h3><p>La imagen y el video salen de <strong>Google Flow</strong> (automatizado en el navegador) o de la <strong>API de Agnes</strong> (imagen e imagen→video, US$ 0). La narración, el montaje y la publicación son iguales para los dos.</p></div>
+    <div class="card"><h3>✂️ CapCut dentro de ffmpeg</h3><p>Ajusta cada clip al tiempo del habla, pone transición entre escenas, fundido desde negro, sonido ambiente al 16% y música que baja sola cuando habla la voz. Después publica con yt-pubx.</p></div>
+  </div>
+</div></section>
+
+<section id="fluxo"><div class="wrap">
+  <span class="chip">Cómo funciona</span>
+  <h2>Cinco etapas, cada una un comando</h2>
+  <p class="sub">Todas se pueden repetir: rehacen solo lo que falta. El material queda numerado por escena en <code>~/projetos/output/docflow/&lt;slug&gt;/</code>.</p>
+  <div class="flow">
+    <span>tema.yaml</span><span class="arr">→</span>
+    <span>guion (Codex)</span><span class="arr">→</span>
+    <span>generar (Flow o Agnes)</span><span class="arr">→</span>
+    <span>narrar (inemavox)</span><span class="arr">→</span>
+    <span>montar (ffmpeg)</span><span class="arr">→</span>
+    <span>publicar (yt-pubx)</span>
+  </div>
+  <div class="grid g3" style="margin-top:26px">
+    <div class="card"><span class="num">A</span><h3>Flow automatizado</h3><p>Cuenta de Google. Un robot (Playwright) abre Flow, pega los bloques de prompts en el agente, aprueba, pide la colección y descarga el zip. <strong>Escrito, aún no validado:</strong> falta el primer inicio de sesión.</p></div>
+    <div class="card"><span class="num">B</span><h3>Codex + Agnes</h3><p>Imágenes con <code>agnes-image-2.1-flash</code> y video con <code>agnes-video-v2.0</code> (imagen→video), por API, a costo cero. <strong>Probado:</strong> hizo el video de ejemplo.</p></div>
+    <div class="card"><span class="num">C</span><h3>Local (planeado)</h3><p>Sin API: flux2-klein para imagen e imagen con movimiento para video. Aún no está implementado.</p></div>
+  </div>
+</div></section>
+
+<section id="pre"><div class="wrap">
+  <span class="chip">Requisitos previos</span>
+  <h2>Qué debe estar instalado</h2>
+  <p class="sub">docflow orquesta herramientas que ya existen. Compruébalas antes del primer uso.</p>
+  <div class="grid g3">
+    <div class="card"><h3>Python + ffmpeg</h3><p>Python 3 con PyYAML para el orquestador y ffmpeg para el montaje.</p><pre><span class="c"># comprobar</span>
+<span class="k">python3</span> -c "import yaml"
+<span class="k">ffmpeg</span> -version</pre></div>
+    <div class="card"><h3>Codex CLI</h3><p>Escribe el guion con tu suscripción. El modelo se puede cambiar con la variable <code>DOCFLOW_CODEX_MODELO</code>.</p><pre><span class="c"># comprobar</span>
+<span class="k">codex</span> --version</pre></div>
+    <div class="card"><h3>Voz, imagen y YouTube</h3><p>inemavox en línea (puerto 8010) para la narración, cliente Agnes de <code>videos-agnes</code> y <code>yt-pubx</code> con el canal autorizado. Para el motor Flow: Node + Playwright.</p><pre><span class="c"># comprobar</span>
+<span class="k">~/projetos/yt-pubx/yt-pubx</span> canais</pre></div>
+  </div>
+</div></section>
+
+<section id="guia"><div class="wrap">
+  <span class="chip">Guía de uso · paso a paso</span>
+  <h2>Del tema al video publicado</h2>
+  <p class="sub">Ejemplo real: el video "Egipto Antiguo en un minuto", hecho con el motor Agnes.</p>
+
+  <div class="step"><div class="b">1</div><div>
+    <h3>Responde las 6 preguntas</h3>
+    <p>Copia <code>temas/egito.yaml</code> y cambia el tema. 60 s de duración total con escenas de 10 s dan 6 escenas.</p>
+<pre><span class="k">slug</span>: egito-antigo
+<span class="k">tema</span>: <span class="s">"El Antiguo Egipto en un minuto: del Nilo a las pirámides..."</span>
+<span class="k">estilo</span>: <span class="s">"realistic cinematic documentary, natural golden light"</span>
+<span class="k">duracao_total</span>: 60
+<span class="k">duracao_cena</span>: 10
+<span class="k">formato</span>: <span class="s">"16:9"</span>
+<span class="k">motor</span>: agnes      <span class="c"># flow | agnes</span>
+<span class="k">voz</span>: nei
+<span class="k">thumb_cena</span>: 3     <span class="c"># imagen usada en la miniatura</span>
+<span class="k">canal</span>: lives1</pre>
+  </div></div>
+
+  <div class="step"><div class="b">2</div><div>
+    <h3>Ejecuta todo de una vez</h3>
+    <p>Guion, imágenes, videos, narración y montaje. En el ejemplo tardó cerca de 9 minutos.</p>
+<pre><span class="k">./docflow tudo</span> temas/egito.yaml  <span class="c"># → ~/projetos/output/docflow/egito-antigo/final.mp4</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">3</div><div>
+    <h3>Revisa y corrige la escena que "se desvió"</h3>
+    <p>Si el generador de video cambia la época o la arquitectura de una escena, reemplaza el clip por la propia imagen con zoom lento y vuelve a montar.</p>
+<pre><span class="k">./docflow estatica</span> temas/egito.yaml --cenas 6
+<span class="k">./docflow montar</span> temas/egito.yaml</pre>
+  </div></div>
+
+  <div class="step"><div class="b">4</div><div>
+    <h3>Mira el paquete de YouTube sin enviar</h3>
+    <p>Título, descripción (con el pie del proyecto, de las API usadas y de INEMA.CLUB), etiquetas y miniatura. En esta etapa no se sube nada.</p>
+<pre><span class="k">./docflow publicar</span> temas/egito.yaml  <span class="c"># dry-run</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">5</div><div>
+    <h3>Publica</h3>
+    <p>Después de ver el video y aprobar la miniatura, envíalo. Para corregir la descripción de un video que ya está publicado, usa <code>descricao --video</code>.</p>
+<pre><span class="k">./docflow publicar</span> temas/egito.yaml --enviar
+<span class="k">./docflow descricao</span> temas/egito.yaml --video https://www.youtube.com/watch?v=...</pre>
+  </div></div>
+
+  <div class="step"><div class="b">6</div><div>
+    <h3>Motor Flow: el primer inicio de sesión (una sola vez)</h3>
+    <p>El robot abre un Chromium en la pantalla virtual <code>:99</code>. Tú entras a la cuenta de Google por VNC (<code>localhost:5900</code>) y aceptas los términos de Flow. La primera ejecución calibra los botones, con una captura de cada paso en <code>tmp/flow-*.png</code>.</p>
+<pre><span class="k">./docflow flow-login</span>
+<span class="k">./docflow gerar</span> temas/egito.yaml --motor flow</pre>
+  </div></div>
+</div></section>
+
+<section id="exemplos"><div class="wrap">
+  <span class="chip">Ejemplo</span>
+  <h2>Egipto Antiguo en un minuto</h2>
+  <p class="sub">6 escenas, 55 s, voz <code>nei</code>, motor Agnes. Publicado en <a href="https://www.youtube.com/watch?v=nOYaruP0gDs" target="_blank" rel="noopener">youtube.com/watch?v=nOYaruP0gDs</a>.</p>
+  <div class="ex">
+    <figure><img src="../assets/ex1.jpg" alt="Las seis imágenes del video de Egipto, una por escena" loading="lazy"><figcaption>Las 6 imágenes generadas por la API de Agnes, una por escena: Nilo, unificación, Guiza, Nubia, Abu Simbel y Alejandría.</figcaption></figure>
+    <figure><img src="../assets/ex2.jpg" alt="Miniatura del video con las pirámides de Guiza" loading="lazy"><figcaption>La miniatura que yt-pubx armó a partir de la escena 3 (<code>thumb_cena: 3</code>).</figcaption></figure>
+  </div>
+</div></section>
+
+<section id="roadmap"><div class="wrap">
+  <span class="chip">Roadmap</span>
+  <h2>Qué ya existe y qué viene</h2>
+  <p class="sub">Versión 0.2.0.</p>
+  <div class="phase"><div class="tag">Hecho</div><div class="d"><strong>Motor Agnes, montaje y publicación</strong><span>Video de ejemplo generado, revisado y publicado; descripción con pie automático.</span></div></div>
+  <div class="phase"><div class="tag">Siguiente</div><div class="d"><strong>Validar el motor Flow</strong><span>Primer inicio de sesión de la cuenta de Google y calibración de los botones del agente de Flow.</span></div></div>
+  <div class="phase"><div class="tag">Después</div><div class="d"><strong>Voz y música desde el navegador</strong><span>AI Studio TTS y Flow Music como motores, con el mismo robot.</span></div></div>
+  <div class="phase"><div class="tag">Planeado</div><div class="d"><strong>Camino local</strong><span>flux2-klein para imágenes e imagen con movimiento para video, sin ninguna API.</span></div></div>
+</div></section>
+
+<footer>
+  <div class="wrap">
+    <div class="pill">Python</div><div class="pill">ffmpeg</div><div class="pill">Codex</div><div class="pill">Agnes AI</div><div class="pill">Playwright</div>
+    <p style="margin-top:18px">docflow · un tema se convierte en documental ·
+      <a href="https://github.com/inematds/docflow">inematds/docflow</a> ·
+      <a href="https://inema.club">INEMA.CLUB</a></p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var KEY='docflow-theme';
+    var b=document.body, t=document.getElementById('themeToggle');
+    if(localStorage.getItem(KEY)==='light'){ b.classList.add('light'); t.textContent='☀️'; }
+    t.addEventListener('click',function(){
+      var light=b.classList.toggle('light');
+      t.textContent=light?'☀️':'🌙';
+      localStorage.setItem(KEY, light?'light':'dark');
+    });
+  })();
+</script>
+</body>
+</html>
