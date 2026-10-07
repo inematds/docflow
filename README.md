@@ -92,6 +92,12 @@ motores de voz e música na próxima versão, pelo mesmo robô.
 Cada etapa também roda sozinha (`roteiro`, `gerar`, `narrar`, `montar`). Todas podem ser
 repetidas: refazem só o que falta. `roteiro --refazer` pede um roteiro novo ao Codex.
 
+**Cena que "derivou"** (o gerador de vídeo trocou a época, a arquitetura ou o rosto):
+`./docflow estatica temas/egito.yaml --cenas 6` troca o clipe de IA pela própria imagem
+com zoom lento, sem IA de vídeo, e depois basta `montar` de novo. É o recurso dos canais
+"só de imagens" citado no vídeo de referência. O clipe descartado vai para `tmp/descartes/`.
+Para refazer um clipe de IA, apague `videos/NNN.mp4` e rode `gerar`: só ele é refeito.
+
 ### O tema (as 6 perguntas do flow)
 
 ```yaml
@@ -129,8 +135,21 @@ canal: lives1          # canal do yt-pubx
 
 ## Vídeo modelo
 
-**"Egito Antigo em um minuto: do Nilo a Cleópatra"**: 6 cenas × 10 s, 16:9, motor Agnes,
+**"Egito Antigo em um minuto: do Nilo a Cleópatra"**: 6 cenas, 55 s, 16:9, motor Agnes,
 voz `nei`. Está em `~/projetos/output/docflow/egito-antigo/final.mp4`.
+
+O que se mediu nesta primeira rodada:
+
+| Etapa | Tempo | Observação |
+|---|---|---|
+| roteiro (Codex) | 48 s | 6 cenas de 16 a 19 palavras, datas por extenso |
+| 6 imagens + 6 clipes (Agnes) | ~5 min | 1 erro 429 (limite de 6/min), recuperado sozinho |
+| 6 narrações (inemavox) | 2,5 min | conferidas por transcrição local: texto bate com o roteiro |
+| montagem (ffmpeg) | 18 s | −17,9 LUFS |
+| publicar (dry-run) | 14 s | título, descrição, tags e thumb prontos; **nada enviado** |
+
+A cena 6 (porto de Alexandria) derivou nas duas tentativas do Agnes: virou um porto
+barroco com cúpula e caravelas. Ficou com `estatica` (imagem com zoom lento).
 
 ## Requisitos
 

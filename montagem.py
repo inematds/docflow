@@ -28,7 +28,7 @@ def tem_audio(p):
 
 
 def sh(cmd):
-    r = subprocess.run(cmd, capture_output=True, text=True)
+    r = subprocess.run(cmd, capture_output=True, text=True, stdin=subprocess.DEVNULL)
     if r.returncode:
         raise RuntimeError('ffmpeg: ' + r.stderr[-600:])
 
@@ -76,7 +76,8 @@ def montar(d, numeros, formato, musica, saida, log):
         ins += ['-i', str(f)]
     tem_musica = bool(musica) and Path(musica).exists()
     if tem_musica:
-        ins += ['-stream_loop', '-1', '-i', str(musica)]
+        voltas = int(total // max(dur(musica), 1))   # finito: -stream_loop -1 nunca fecha o grafo
+        ins += ['-stream_loop', str(voltas), '-i', str(musica)]
     n = len(cenas)
 
     ult = '[0:v]'
@@ -106,10 +107,21 @@ def montar(d, numeros, formato, musica, saida, log):
     else:
         fc.append('[voz][ambt]amix=inputs=2:normalize=0,alimiter=limit=0.95[aout]')
 
-    (T / 'filtro.txt').write_text(';\n'.join(fc))
-    sh(['ffmpeg', '-loglevel', 'error', *ins, '-filter_complex_script', str(T / 'filtro.txt'),
-        '-map', '[vout]', '-map', '[aout]', '-t', f'{total:.3f}',
+    # Imagem e som em passadas separadas: no mesmo grafo o xfade (que só lê a cena N no
+    # offset dela) e o adelay do ambiente da mesma cena travam a fila do ffmpeg no fim.
+    fv = [l for l in fc if 'xfade' in l or '[vout]' in l]
+    fa = [l for l in fc if l not in fv]
+    (T / 'filtro-video.txt').write_text(';\n'.join(fv))
+    (T / 'filtro-audio.txt').write_text(';\n'.join(fa))
+    sh(['ffmpeg', '-loglevel', 'error', *ins[:2 * n], '-filter_complex_script',
+        str(T / 'filtro-video.txt'), '-map', '[vout]', '-t', f'{total:.3f}',
         '-c:v', 'libx264', '-crf', '20', '-preset', 'medium', '-pix_fmt', 'yuv420p',
-        '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', '-y', str(saida)])
+        '-y', str(T / 'imagem.mp4')])
+    sh(['ffmpeg', '-loglevel', 'error', *ins, '-filter_complex_script',
+        str(T / 'filtro-audio.txt'), '-map', '[aout]', '-t', f'{total:.3f}',
+        '-c:a', 'aac', '-b:a', '192k', '-y', str(T / 'som.m4a')])
+    sh(['ffmpeg', '-loglevel', 'error', '-i', str(T / 'imagem.mp4'), '-i', str(T / 'som.m4a'),
+        '-map', '0:v', '-map', '1:a', '-c', 'copy', '-shortest', '-movflags', '+faststart',
+        '-y', str(saida)])
     log(f'  filme: {dur(saida):.1f}s · {saida.stat().st_size / 1048576:.1f} MB')
     return saida

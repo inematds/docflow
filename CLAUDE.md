@@ -13,3 +13,5 @@ Tema → documentário curto narrado → YouTube. Plano, tabela dos 3 caminhos e
 When I correct you, or you catch yourself making a mistake: before continuing, add the lesson as a one-line rule under ## Lessons, so it never happens again.
 
 ## Lessons
+
+- ffmpeg chamado por script: sempre `stdin=DEVNULL` e NUNCA vídeo com xfade + áudio com adelay das mesmas entradas num só filter_complex (trava no fim); renderizar imagem e som separados e juntar com `-c copy`. Testar com `timeout -s KILL` (o SIGTERM o ffmpeg ignora). (07/10/2026)

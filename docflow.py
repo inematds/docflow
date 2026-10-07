@@ -8,6 +8,7 @@ CapCut -> YouTube) sem passos manuais:
   gerar     imagens 001..N e clipes 001..N pelo motor escolhido (flow | agnes)
   narrar    uma fala por cena (inemavox, local) -> encaixa no tempo de cada cena
   montar    ffmpeg faz o papel do CapCut: tempo, transição, fades, ambiente, música
+  estatica  troca o clipe de IA de uma cena pela imagem com zoom lento (--cenas 6)
   publicar  yt-pubx (dry-run por padrão; --enviar sobe de verdade)
   tudo      roteiro -> gerar -> narrar -> montar (para antes de publicar)
 
@@ -108,6 +109,25 @@ def cmd_gerar(t, d, motor):
     log(f'gerar: {len(p["cenas"])} clipes prontos')
 
 
+def cmd_estatica(t, d, cenas):
+    """Troca o clipe de IA da cena pela própria imagem com zoom lento (sem IA de vídeo).
+    Para cena em que o gerador "deriva" (muda época, arquitetura, rosto)."""
+    from montagem import RES
+    W, H = RES.get(t['formato'], RES['16:9'])
+    fps, seg = 30, t['duracao_cena']
+    for n in cenas:
+        png, dest = d / f'imagens/{n:03d}.png', d / f'videos/{n:03d}.mp4'
+        if dest.exists():
+            (d / 'tmp/descartes').mkdir(parents=True, exist_ok=True)
+            dest.rename(d / f'tmp/descartes/{n:03d}-ia-{int(time.time())}.mp4')
+        subprocess.run(['ffmpeg', '-nostdin', '-loglevel', 'error', '-loop', '1', '-i', str(png),
+                        '-vf', f'scale={W * 2}:-2,zoompan=z=\'min(1+0.0009*on,1.25)\':'
+                        f'x=\'iw/2-(iw/zoom/2)\':y=\'ih/2-(ih/zoom/2)\':d={fps * seg}:s={W}x{H}:fps={fps}',
+                        '-t', str(seg), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-y', str(dest)],
+                       check=True)
+        log(f'  cena {n:03d}: imagem com zoom lento ({seg}s)')
+
+
 # ---------------------------------------------------------------- 3. narrar
 def cmd_narrar(t, d):
     sys.path.insert(0, str(Path.home() / 'projetos/videos-agnes'))
@@ -167,10 +187,11 @@ def main():
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--version', action='version', version=VERSAO)
     ap.add_argument('etapa', choices=['roteiro', 'gerar', 'narrar', 'montar', 'publicar', 'tudo',
-                                      'flow-login'])
+                                      'estatica', 'flow-login'])
     ap.add_argument('tema', nargs='?', help='temas/<x>.yaml')
     ap.add_argument('--motor', help='flow | agnes (padrão: o do tema.yaml)')
     ap.add_argument('--refazer', action='store_true', help='refaz o roteiro')
+    ap.add_argument('--cenas', help='estatica: números das cenas, ex. 6 ou 2,6')
     ap.add_argument('--enviar', action='store_true', help='publicar de verdade (sem dry-run)')
     a = ap.parse_args()
 
@@ -190,6 +211,8 @@ def main():
         cmd_narrar(t, d)
     if a.etapa in ('montar', 'tudo'):
         cmd_montar(t, d)
+    if a.etapa == 'estatica':
+        cmd_estatica(t, d, [int(x) for x in (a.cenas or '').split(',') if x])
     if a.etapa == 'publicar':
         cmd_publicar(t, d, a.enviar)
     log(f'[{a.etapa}] {time.time() - t0:.0f}s')
