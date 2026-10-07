@@ -1,0 +1,15 @@
+# Vídeo modelo do docflow — as 6 respostas do "flow"
+slug: egito-antigo
+tema: "O Egito Antigo em um minuto: do Nilo às pirâmides, faraós, Ramsés II e o fim com Cleópatra"
+estilo: "realistic cinematic documentary, natural golden light, 35mm film look"
+duracao_total: 60
+duracao_cena: 10
+formato: "16:9"
+idioma: "português do Brasil"
+referencias: "nenhuma (sem personagem fixo)"
+
+# Execução
+motor: agnes          # flow | agnes | local
+voz: nei              # voz do inemavox (chatterbox): nei, nei2, bella...
+musica: ~/projetos/inemavox/jobs/audio_library/music/freesound_595385_Star_walk_-_Cinematic_Atmo_Amb_Fantasy_S.mp3
+canal: lives1         # canal do yt-pubx (só usado em `publicar`)
