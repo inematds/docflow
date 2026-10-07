@@ -64,6 +64,11 @@ só repete os cliques:
 
 Cada passo salva um print em `tmp/flow-*.png`, para calibrar quando a tela do Flow mudar.
 
+O robô usa o **Playwright** e não a extensão Claude in Chrome: não precisa abrir o
+Claude com `claude --chrome`. Ele abre um **segundo Chromium** no display `:99`, ao lado
+do Chromium do `stack99` (HeyGen/Magnific). Regra do `:99`: uma automação por vez. Não
+rode HeyGen ou Magnific pelo navegador enquanto um `--motor flow` estiver rodando.
+
 Não usamos os endpoints internos do Flow sem a tela: não são públicos, quebram sem aviso e
 arriscam a conta.
 

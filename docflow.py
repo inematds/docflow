@@ -172,7 +172,7 @@ def cmd_publicar(t, d, enviar=False):
                '--title', y['titulo'], '--description', y['descricao'],
                '--tags', ','.join(y['tags']), '--thumb-arte', str(d / 'imagens/001.png'),
                '--categoria', '27', '--dry-run']
-    log('publicar: ' + ' '.join(cmd[:4]) + (' (ENVIANDO)' if enviar else ' (dry-run)'))
+    log(f'publicar: yt-pubx · canal {t.get("canal", "lives1")} · ' + ('ENVIANDO' if enviar else 'dry-run'))
     r = subprocess.run(cmd, capture_output=True, text=True)
     print(r.stdout[-2500:], r.stderr[-1500:])
     m = re.search(r'(\S+plano\.json)', r.stdout + r.stderr)
