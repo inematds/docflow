@@ -32,6 +32,8 @@ def carregar_tema(caminho):
     t = yaml.safe_load(open(caminho))
     t['n_cenas'] = max(1, round(t['duracao_total'] / t['duracao_cena']))
     t['palavras_cena'] = int(t['duracao_cena'] * 2.2)   # ~2,2 palavras/s em narração calma
+    t.setdefault('fatos', 'nenhum fato fornecido: use só conhecimento consolidado')
+    t.setdefault('estrutura', 'livre, em ordem cronológica')
     d = SAIDA / t['slug']
     for sub in ('imagens', 'videos', 'narracao', 'tmp'):
         (d / sub).mkdir(parents=True, exist_ok=True)
@@ -168,6 +170,7 @@ def descricao(p, t):
     m = re.match(r'freesound_(\d+)_(.*)', musica)
     credito = f'"{m.group(2).replace("_", " ")}" (Freesound #{m.group(1)})' if m else musica
     linhas = [p['youtube']['descricao'].strip(), '',
+              *([f'📌 Fontes: {t["fontes"].strip()}', ''] if t.get('fontes') else []),
               '🛠️ Como este vídeo foi feito',
               'Produzido de ponta a ponta pelo docflow, projeto aberto do INEMA que transforma '
               'um tema em documentário curto narrado: https://github.com/inematds/docflow',

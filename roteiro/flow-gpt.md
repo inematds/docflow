@@ -9,12 +9,18 @@ Recebe as 6 respostas abaixo e devolve TUDO de uma vez, sem perguntar nada.
 5. Formato e idioma: {formato}, narração em {idioma}
 6. Referências (personagem/cenário): {referencias}
 
+## Fatos (use SOMENTE estes números, datas e orientações; não invente nada além)
+{fatos}
+
+## Estrutura das cenas (siga esta ordem)
+{estrutura}
+
 ## Regras
-- Exatamente {n_cenas} cenas, em ordem cronológica, cada uma com UMA ideia.
+- Exatamente {n_cenas} cenas, na ordem da estrutura, cada uma com UMA ideia.
 - Narração de cada cena em {idioma}, para ser lida em voz alta em no máximo {duracao_cena} segundos
   (no máximo {palavras_cena} palavras por cena). Números e datas POR EXTENSO
   ("mil novecentos e trinta e nove", "três mil anos"), sem siglas, sem parênteses.
-- Fatos históricos corretos e conservadores; nada de exagero inventado.
+- Fatos corretos e conservadores; nada de exagero inventado. Previsão é previsão: diga "deve", "pode", "a previsão indica", nunca como fato consumado.
 - prompt_imagem e prompt_video em INGLÊS (o gerador recusa português).
   prompt_imagem: um quadro fixo, {estilo}, composição cinematográfica {formato}, sem texto escrito,
   sem logotipos, sem rostos de pessoas reais famosas em close; nada de violência gráfica.
