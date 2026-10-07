@@ -170,7 +170,7 @@ def cmd_publicar(t, d, enviar=False):
         y = p['youtube']
         cmd = [str(yt), 'publicar', str(final), '--canal', t.get('canal', 'lives1'),
                '--title', y['titulo'], '--description', y['descricao'],
-               '--tags', ','.join(y['tags']), '--thumb-arte', str(d / 'imagens/001.png'),
+               '--tags', ','.join(y['tags']), '--thumb-arte', str(d / f'imagens/{int(t.get("thumb_cena", 1)):03d}.png'),
                '--categoria', '27', '--dry-run']
     log(f'publicar: yt-pubx · canal {t.get("canal", "lives1")} · ' + ('ENVIANDO' if enviar else 'dry-run'))
     r = subprocess.run(cmd, capture_output=True, text=True)

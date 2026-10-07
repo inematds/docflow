@@ -151,7 +151,7 @@ O que se mediu nesta primeira rodada:
 | 6 imagens + 6 clipes (Agnes) | ~5 min | 1 erro 429 (limite de 6/min), recuperado sozinho |
 | 6 narrações (inemavox) | 2,5 min | conferidas por transcrição local: texto bate com o roteiro |
 | montagem (ffmpeg) | 18 s | −17,9 LUFS |
-| publicar (dry-run) | 14 s | título, descrição, tags e thumb prontos; **nada enviado** |
+| publicar | 84 s | publicado em https://www.youtube.com/watch?v=nOYaruP0gDs (canal INEMA TDS), thumb das pirâmides (`thumb_cena: 3`) |
 
 A cena 6 (porto de Alexandria) derivou nas duas tentativas do Agnes: virou um porto
 barroco com cúpula e caravelas. Ficou com `estatica` (imagem com zoom lento).
