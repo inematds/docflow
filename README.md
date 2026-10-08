@@ -28,7 +28,7 @@ tutorial. Nele, tudo era feito à mão:
 
 Aqui cada etapa é um comando, e o motor de imagem e vídeo pode ser trocado.
 
-Versão: **0.4.0**
+Versão: **0.5.0**
 
 ---
 
@@ -152,6 +152,7 @@ graficos:                  # viram gráfico animado (linha ou barras)
   e o rótulo do lugar e da data.
 - `gerar` narra primeiro e corta cada cena no tempo exato da fala. A descrição do YouTube ganha
   a lista de créditos das imagens usadas.
+- `refazer_ia: fotos` (ou lista de arquivos): o Agnes refaz cada foto usando a original como referência (imagem → imagem). Serve quando a foto não tem licença de reúso. Mapas, satélite e gráficos continuam reais (IA inventaria dado). Na tela o crédito vira "Ilustração IA (Agnes) · inspirada em foto de …".
 - Exemplo: `temas/elnino-2026-reais.yaml` (dados de 07/10/2026).
 
 ### O tema (as 6 perguntas do flow)

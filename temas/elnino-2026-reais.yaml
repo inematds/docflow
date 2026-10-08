@@ -11,6 +11,7 @@ referencias: "nenhuma"
 
 motor: reais
 ritmo: dinamico
+refazer_ia: fotos      # o Agnes refaz cada foto usando a original como referência (mapas e gráficos ficam reais)
 imagens_reais: ~/projetos/output/docflow/elnino-2026-reais/fontes
 voz: nei
 musica: ~/projetos/inemavox/jobs/audio_library/music/freesound_756425_Tech_Corporation_80bpm_loop.mp3

@@ -37,8 +37,9 @@ def tamanho(p):
 
 
 # ---------------------------------------------------------------- catálogo
-def catalogo(t, d):
-    """Imagens reais (creditos.json) + gráficos do tema (renderizados como PNG de prévia)."""
+def catalogo(t, d, sem_ia=False):
+    """Imagens reais (creditos.json) + gráficos do tema (renderizados como PNG de prévia).
+    Com `refazer_ia`, a foto que o Agnes refez entra no lugar da original (ver refazer_ia)."""
     pasta = Path(t['imagens_reais']).expanduser()
     dados = json.load(open(pasta / 'creditos.json'))
     if isinstance(dados, dict):   # {"imagens": [...], ...}
@@ -46,6 +47,13 @@ def catalogo(t, d):
     itens = [dict(x, caminho=str(pasta / x['arquivo']), tipo='imagem')
              for x in dados
              if (pasta / x['arquivo']).exists()]
+    if not sem_ia:
+        for x in itens:
+            nova = pasta / 'ia' / (Path(x['arquivo']).stem + '.png')
+            if precisa_refazer(x, t) and nova.exists():
+                x['caminho'] = str(nova)
+                x['credito'] = 'Ilustração IA (Agnes) · inspirada em ' + x['credito'].replace('Foto: ', 'foto de ')
+                x['ia'] = True
     for g in t.get('graficos', []):
         itens.append({'arquivo': g['arquivo'], 'tipo': 'grafico', 'grafico': g,
                       'descricao': f'GRÁFICO: {g["titulo"]} ({g.get("unidade", "")}) — '
@@ -259,6 +267,8 @@ def gerar(p, t, d, log, x_transicao, folga):
     """Um clipe por cena no tempo exato da fala (a montagem não precisa acelerar nada)."""
     from montagem import RES
     W, H = RES.get(t['formato'], RES['16:9'])
+    if t.get('refazer_ia'):
+        refazer_ia(t, d, log)
     itens = catalogo(t, d)
     ritmo = t.get('ritmo', 'calmo')
     tmp = d / 'tmp/reais'
@@ -300,3 +310,75 @@ def creditos_usados(p, t, d):
             if linha and linha not in vistos:
                 vistos.append(linha)
     return vistos
+
+
+# ---------------------------------------------------------------- fotos refeitas pelo Agnes
+REFAZER_PROMPT = '''For each photo below, write ONE English prompt for an image model that will
+receive the photo as a visual reference and create a NEW photorealistic documentary photo
+inspired by it: same subject, place type, light and mood, but different people (no real
+identifiable faces), different framing details, no text, no logos, no watermarks.
+Return ONLY a JSON object {{"<arquivo>": "<prompt>", ...}}.
+
+{lista}
+'''
+
+
+def precisa_refazer(x, t):
+    """Quais itens do catálogo o Agnes refaz: `refazer_ia: fotos` (todo crédito "Foto…")
+    ou uma lista de nomes de arquivo. Mapa, satélite e gráfico nunca: IA inventaria dado."""
+    alvo = t.get('refazer_ia')
+    if not alvo or x['tipo'] != 'imagem':
+        return False
+    if alvo == 'fotos':
+        return x.get('credito', '').startswith('Foto')
+    return x['arquivo'] in alvo
+
+
+def refazer_ia(t, d, log):
+    """Manda cada foto como referência (img2img) ao Agnes e guarda a versão nova em <pasta>/ia/.
+    Na tela o crédito vira "Ilustração IA (Agnes) · inspirada em <crédito original>"."""
+    import base64, os, re, struct, urllib.request
+    sys_path = str(Path.home() / 'projetos/videos-agnes')
+    import sys
+    sys.path.insert(0, sys_path)
+    import pipeline as va
+    pasta = Path(t['imagens_reais']).expanduser()
+    ia = pasta / 'ia'
+    ia.mkdir(exist_ok=True)
+    itens = [x for x in catalogo(t, d, sem_ia=True) if precisa_refazer(x, t)
+             and not (ia / (Path(x['arquivo']).stem + '.png')).exists()]
+    if not itens:
+        return
+    prompts_f = ia / 'prompts.json'
+    prompts = json.load(open(prompts_f)) if prompts_f.exists() else {}
+    faltam = [x for x in itens if x['arquivo'] not in prompts]
+    if faltam:
+        lista = '\n'.join(f'- {x["arquivo"]}: {x.get("descricao", "")}' for x in faltam)
+        r = subprocess.run(['codex', 'exec', '-m', os.environ.get('DOCFLOW_CODEX_MODELO', 'gpt-6-astra'),
+                            '-s', 'read-only', '--skip-git-repo-check', '-'],
+                           input=REFAZER_PROMPT.format(lista=lista), capture_output=True, text=True, timeout=600)
+        m = re.search(r'\{.*\}', r.stdout, re.S)
+        if not m:
+            raise SystemExit('refazer_ia: o Codex não devolveu os prompts')
+        prompts.update(json.loads(m.group(0)))
+        json.dump(prompts, open(prompts_f, 'w'), ensure_ascii=False, indent=2)
+    for x in itens:
+        ref = ia / ('ref-' + Path(x['arquivo']).stem + '.png')
+        sh(['ffmpeg', '-loglevel', 'error', '-i', x['caminho'], '-vf', 'scale=1312:-2', '-y', str(ref)])
+        uri = 'data:image/png;base64,' + base64.b64encode(ref.read_bytes()).decode()
+        body = {'model': 'agnes-image-2.1-flash',
+                'prompt': prompts[x['arquivo']] + ' Photorealistic documentary photography. No text, no letters, no watermark.',
+                'size': '1312x736', 'extra_body': {'response_format': 'url', 'image': [uri]}}
+        for tentativa in range(1, 7):
+            try:
+                u = va._post(va.IMG_API, body)['data'][0]['url']
+                b = urllib.request.urlopen(u, timeout=180).read()
+                (ia / (Path(x['arquivo']).stem + '.png')).write_bytes(b)
+                w, h = struct.unpack('>II', b[16:24])
+                log(f'  ia {x["arquivo"]}: {w}x{h}')
+                break
+            except Exception as e:
+                log(f'    ia {x["arquivo"]} falha {tentativa}: {str(e)[:90]}')
+                import time
+                time.sleep(5 * tentativa)
+        ref.unlink()

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.0 — 2026-10-07
+- `refazer_ia` no modo `reais`: o Agnes refaz as fotos (img2img, a original como referência), para foto sem licença de reúso. Crédito na tela "Ilustração IA (Agnes) · inspirada em …"; mapas, satélite e gráficos ficam reais.
+
 ## 0.4.0 — 2026-10-07
 - Motor `reais`: imagens reais (mapas, satélite, fotos com licença) em vez de IA, escolhidas pelo roteiro num catálogo (`creditos.json`), com crédito na tela e na descrição.
 - `ritmo: dinamico`: cortes a cada 2–3 s (foto longa vira dois cortes), números em destaque, rótulo de lugar e data, fusão de 0,35 s entre cenas.

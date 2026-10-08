@@ -23,7 +23,7 @@ import yaml
 
 RAIZ = Path(__file__).resolve().parent
 SAIDA = Path.home() / 'projetos/output/docflow'
-VERSAO = '0.4.0'
+VERSAO = '0.5.0'
 os.environ.setdefault('NODE_PATH', str(Path.home() / '.npm-global/lib/node_modules'))
 
 
@@ -247,6 +247,8 @@ def descricao(p, t):
               'um tema em documentário curto narrado: https://github.com/inematds/docflow',
               '• Roteiro, texto da narração e prompts: Codex (OpenAI), pela assinatura',
               *('• ' + x for x in MOTORES.get(t.get('motor', 'agnes'), [])),
+              *(['• Fotos refeitas por IA a partir das originais: Agnes AI (agnes-image-2.1-flash, '
+                 'imagem → imagem), por API; aparecem marcadas "Ilustração IA"'] if t.get('refazer_ia') else []),
               f'• Narração: inemavox, TTS local (chatterbox, voz {t.get("voz", "nei")})',
               *([f'• Música: {credito}'] if musica else []),
               '• Montagem: ffmpeg, local',

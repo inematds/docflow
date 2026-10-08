@@ -28,7 +28,7 @@ tutorial. En él, todo se hacía a mano:
 
 Aquí cada etapa es un comando, y el motor de imagen y video se puede cambiar.
 
-Versión: **0.4.0**
+Versión: **0.5.0**
 
 ---
 
@@ -139,6 +139,7 @@ línea o barras).
   crédito y la etiqueta de lugar y fecha.
 - `gerar` narra primero y corta cada escena al tiempo exacto de su voz. La descripción de YouTube
   incluye los créditos de las imágenes usadas.
+- `refazer_ia: fotos` (o lista de archivos): Agnes rehace cada foto usando la original como referencia (imagen → imagen), para fotos sin licencia de reutilización. Mapas, satélite y gráficos siguen reales (la IA inventaría datos). En pantalla el crédito pasa a "Ilustração IA (Agnes) · inspirada em foto de …".
 - Ejemplo: `temas/elnino-2026-reais.yaml` (datos del 07/10/2026).
 
 ### El tema (las 6 preguntas del flow)

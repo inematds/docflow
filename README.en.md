@@ -28,7 +28,7 @@ video. In it, everything was done by hand:
 
 Here each step is one command, and the image and video engine can be swapped.
 
-Version: **0.4.0**
+Version: **0.5.0**
 
 ---
 
@@ -138,6 +138,7 @@ numbers the narration may use) and `graficos:` (series that become animated line
   place/date label.
 - `gerar` narrates first and cuts each scene to the exact length of its speech. The YouTube
   description lists the credits of the images used.
+- `refazer_ia: fotos` (or a list of files): Agnes remakes each photo using the original as reference (image → image), for photos without a reuse licence. Maps, satellite and charts stay real (AI would invent data). On screen the credit becomes "Ilustração IA (Agnes) · inspirada em foto de …".
 - Example: `temas/elnino-2026-reais.yaml` (data from 2026-10-07).
 
 ### The theme (the 6 questions of the flow)
