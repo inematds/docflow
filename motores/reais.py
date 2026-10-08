@@ -364,10 +364,12 @@ def refazer_ia(t, d, log):
         json.dump(prompts, open(prompts_f, 'w'), ensure_ascii=False, indent=2)
     for x in itens:
         ref = ia / ('ref-' + Path(x['arquivo']).stem + '.png')
-        sh(['ffmpeg', '-loglevel', 'error', '-i', x['caminho'], '-vf', 'scale=1312:-2', '-y', str(ref)])
+        vf = (x['ref_vf'] + ',' if x.get('ref_vf') else '') + 'scale=1312:-2'   # ref_vf: ex. crop que tira um logo
+        sh(['ffmpeg', '-loglevel', 'error', '-i', x['caminho'], '-vf', vf, '-y', str(ref)])
         uri = 'data:image/png;base64,' + base64.b64encode(ref.read_bytes()).decode()
         body = {'model': 'agnes-image-2.1-flash',
-                'prompt': prompts[x['arquivo']] + ' Photorealistic documentary photography. No text, no letters, no watermark.',
+                'prompt': prompts[x['arquivo']] + ' Photorealistic documentary photography. Plain surfaces: no logos, no emblems, no insignia, '
+                          'no signs, no banners, no text or letters anywhere, no watermark.',
                 'size': '1312x736', 'extra_body': {'response_format': 'url', 'image': [uri]}}
         for tentativa in range(1, 7):
             try:
