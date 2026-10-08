@@ -1,0 +1,38 @@
+# El Niño 2026 no estilo "historia" (piloto de 08/10/2026): gancho, promessa, analogia,
+# prova na tela, grafismos, mapas ao vivo e b-roll do Agnes. O plano.json do piloto foi
+# escrito à mão em ~/projetos/output/docflow/elnino-historia/ (o roteiro/flow-historia.md
+# é o modelo para os próximos temas).
+slug: elnino-historia
+estilo: historia
+tema: "O El Niño de 2026 não é um El Niño qualquer: de onde vem o calor, por que assusta e o que muda na sua casa"
+duracao_total: 210
+idioma: "português do Brasil"
+voz: nei
+musica: ~/projetos/inemavox/jobs/audio_library/music/freesound_756425_Tech_Corporation_80bpm_loop.mp3
+canal: lives10
+thumb_broll: oceano
+
+fatos: |
+  - Pacífico (NOAA, índice Niño 3.4, semanal): anomalia de +1,7 °C em 1º de julho, +2,6 °C em 26 de agosto e +3,2 °C na semana de 30 de setembro de 2026.
+  - ONI (média de 3 meses, NOAA): +2,16 °C em julho-agosto-setembro de 2026, o valor mais alto já registrado para esse trimestre desde 1950. Picos de eventos anteriores: 1982-83 +2,14; 1997-98 +2,37; 2015-16 +2,59; 2023-24 +1,99. Em 2026 ainda está subindo.
+  - NOAA (10 de setembro): mais de 90% de chance de El Niño muito forte; 75% de chance de evento histórico, o mais forte desde 1950, em outubro-novembro-dezembro. OMM: pico previsto entre novembro e dezembro; Inmet: El Niño deve seguir pelo menos até o primeiro trimestre de 2027.
+  - Calor: onda de calor com alerta vermelho do Inmet a partir de 26 de setembro, em oito estados (MT, MS, MG, GO, RJ, SP, PR, SC). Previsão do Inmet para outubro: calor acima da média em grande parte do país, até 2 °C acima em partes de Goiás, Distrito Federal e Minas.
+  - Seca no Norte: o Rio Negro em Manaus caiu de 28,50 m em 30 de junho para 18,59 m em 2 de outubro de 2026, quase dez metros. Em 2023 chegou ao mínimo de 12,70 m. A Defesa Civil do Amazonas diz que a estiagem pode ser parecida com a de 2023.
+  - Fogo (INPE): a Amazônia teve 12.562 focos de calor em setembro de 2026, contra 7.211 em setembro de 2025, alta de 74%. Agosto: 9.206 contra 6.094. Fumaça encobriu Manaus. No Brasil todo, setembro teve 13,6% menos focos que em 2025 e o Cerrado caiu 44%: o fogo se concentrou na Amazônia.
+  - Sul, temporais de 20 e 21 de setembro no RS: 4 mortes, danos em 151 municípios, 194,6 mm de chuva em 12 horas em Jaquirana e rajada de 126,7 km/h em Hulha Negra.
+  - Sul, chuvas de 25 a 28 de setembro: 39 mil pessoas afetadas no RS e 6.088 desalojados; em Santa Catarina, 7 municípios em situação de emergência. Em 6 de outubro, alerta de risco muito alto de inundação no rio Uruguai, em Uruguaiana e Itaqui.
+  - Próximos meses (Inmet): menos chuva e mais calor no Norte; chuva acima da média no Sul; risco de fogo no centro-norte e de cheias no Sul.
+  - Como se preparar (Defesa Civil): mande seu CEP por SMS para 40199 para receber alertas, é grátis; trinta centímetros de água já arrastam um carro, nunca atravesse área alagada; tenha um plano da família e saiba para onde ir; emergência 199 (Defesa Civil) e 193 (Bombeiros). No calor: beba água, evite sol das 10 às 16 horas, cuide de idosos, crianças e animais. Na seca: não faça queimadas e não jogue bituca de cigarro.
+  - NOAA CPC, discussão de 8 de outubro de 2026: El Niño segue se fortalecendo; mais de 83% de chance de El Niño forte a muito forte até janeiro-março de 2027; anomalias da superfície do mar acima de +4,0 °C em partes do Pacífico equatorial leste; chances altas de evento histórico (o mais forte desde 1950). Trechos da página (em inglês): "with a strong-to-very strong El Niño likely through January-March 2027 (remaining greater than an 83% chance)" e "sea surface temperature anomalies exceeding +4.0°C in portions of the eastern equatorial Pacific". URL: https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml
+  - Met Office (blog de 21/08/2026): Adam Scaife, chefe de previsões de longo prazo, disse "I have never seen an El Niño signal this intense in our forecasts" (nunca vi um sinal de El Niño tão intenso nas nossas previsões). URL: https://www.metoffice.gov.uk/blog/2026/an-unprecedented-el-nio-and-its-implications-for-the-weather-forecast
+  - Ministério da Saúde, 22/07/2026: alerta a estados e municípios para o aumento de dengue e outras arboviroses ligado ao El Niño.
+  - Distância Manaus–Porto Alegre: mais de três mil quilômetros.
+
+estrutura: |
+  1. Gancho: o Pacífico mais de três graus acima do normal; no mesmo mês, fumaça em Manaus e mortos no Sul. Fogo no Norte, água no Sul, mesma causa.
+  2. Promessa: três coisas em três minutos (de onde vem o calor, por que assusta, o que muda na sua casa).
+  3. Capítulo 1, de onde vem o calor: analogia própria (piscina com ventilador) e o corte do Pacífico.
+  4. Capítulo 2, por que assusta: recorde desde 1950, Met Office, NOAA de 8 de outubro.
+  5. Capítulo 3, o que muda na sua casa: Norte (Rio Negro, fogo), Sul (temporais), saúde (dengue).
+  6. O que fazer: SMS 40199, água nunca, calor; o pico vem entre novembro e dezembro.
+  7. CTA INEMA.CLUB.

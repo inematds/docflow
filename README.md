@@ -28,7 +28,7 @@ tutorial. Nele, tudo era feito à mão:
 
 Aqui cada etapa é um comando, e o motor de imagem e vídeo pode ser trocado.
 
-Versão: **0.5.0**
+Versão: **0.6.0**
 
 ---
 
@@ -122,6 +122,25 @@ repetidas: refazem só o que falta. `roteiro --refazer` pede um roteiro novo ao 
 com zoom lento, sem IA de vídeo, e depois basta `montar` de novo. É o recurso dos canais
 "só de imagens" citado no vídeo de referência. O clipe descartado vai para `tmp/descartes/`.
 Para refazer um clipe de IA, apague `videos/NNN.mp4` e rode `gerar`: só ele é refeito.
+
+### Estilos: qual vídeo dá para pedir
+
+`./docflow estilos` lista os estilos prontos; no tema, `estilo: <nome>` liga os padrões de cada um.
+
+| Estilo | O que é | Exemplo |
+|---|---|---|
+| `documentario` | cenas geradas por IA (imagem → vídeo), narração calma | [Egito](https://www.youtube.com/watch?v=TsVY4UUc5gI) |
+| `reais` | mapas, satélite e fotos reais, gráficos animados, números na tela | [El Niño em números](https://www.youtube.com/watch?v=IE_D18omUjE) |
+| `alerta-vertical` | Short 9:16: ALERTA no topo, imagem em cima, mapa ao vivo embaixo, legenda palavra a palavra (protótipo à mão) | [El Niño ALERTA](https://www.youtube.com/watch?v=6OzZWiQHHdw) |
+| `historia` | explicativo no estilo dos canais de divulgação: gancho de cena com paradoxo, promessa, analogia, **prova na tela** (print de página oficial com o trecho grifado), grafismos animados, mapas ao vivo do earth.nullschool e cenas de cinema do Agnes; corte a cada 4–5 s | piloto El Niño (3 min) |
+| `historia-apresentador` | o mesmo, com o avatar do Nei (HeyGen, pago) em alguns blocos | piloto El Niño |
+
+No estilo `historia` o roteiro (`roteiro/flow-historia.md`) devolve, por bloco, a narração e a
+lista de visuais (`mapa`, `broll`, `prova`, `termometro`, `contador`, `capitulo`, `bolso`,
+`linha_tempo`, `citacao`, `oceano`, `cta`). `gerar` faz o b-roll e a narração; `montar` grava os
+mapas ao vivo, tira os prints e desenha os grafismos (`motores/grafismo.py`, `motores/navegador.mjs`).
+O avatar: `./docflow apresentador temas/x.yaml --look computador --teste` gera só o primeiro bloco
+e mostra o custo real; sem `--teste`, gera os demais. Tema exemplo: `elnino-2026-historia`.
 
 ### Modo imagens reais + ritmo dinâmico (assunto atual, com dados)
 

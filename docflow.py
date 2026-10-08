@@ -23,13 +23,51 @@ import yaml
 
 RAIZ = Path(__file__).resolve().parent
 SAIDA = Path.home() / 'projetos/output/docflow'
-VERSAO = '0.5.0'
+VERSAO = '0.6.0'
 os.environ.setdefault('NODE_PATH', str(Path.home() / '.npm-global/lib/node_modules'))
+
+
+# ---------------------------------------------------------------- estilos
+# `estilo:` no tema liga os padrões abaixo (o que o tema disser explicitamente vence).
+ESTILOS = {
+    'documentario': {
+        'resumo': 'Documentário narrado com cenas geradas por IA (imagem -> vídeo), ritmo calmo.',
+        'exemplo': 'https://www.youtube.com/watch?v=TsVY4UUc5gI (Egito)',
+        'tema': {'motor': 'agnes', 'ritmo': 'calmo', 'formato': '16:9'}},
+    'reais': {
+        'resumo': 'Assunto atual com mapas, satélite e fotos reais, gráficos animados e números na tela.',
+        'exemplo': 'https://www.youtube.com/watch?v=IE_D18omUjE (El Niño em números)',
+        'tema': {'motor': 'reais', 'ritmo': 'dinamico', 'formato': '16:9'}},
+    'alerta-vertical': {
+        'resumo': 'Short 9:16 em tom de alerta: ALERTA no topo, imagem em cima, mapa ao vivo embaixo, '
+                  'legenda palavra a palavra. (Protótipo montado à mão; ainda não é motor.)',
+        'exemplo': 'https://www.youtube.com/watch?v=6OzZWiQHHdw (El Niño ALERTA)',
+        'tema': None},
+    'historia': {
+        'resumo': 'Explicativo no estilo dos canais de divulgação: gancho de cena com paradoxo, '
+                  'promessa, analogia, prova na tela (print grifado), grafismos animados, mapas ao vivo '
+                  'e b-roll de cinema (Agnes); corte a cada 4–5 s.',
+        'exemplo': '~/projetos/output/docflow/elnino-historia/final-sem-apresentador.mp4 (piloto)',
+        'tema': {'motor': 'historia', 'ritmo': 'dinamico', 'formato': '16:9', 'duracao_cena': 30}},
+    'historia-apresentador': {
+        'resumo': 'O estilo historia com o avatar do Nei (HeyGen, pago) abrindo e fechando blocos.',
+        'exemplo': '~/projetos/output/docflow/elnino-historia/final-com-apresentador.mp4 (piloto)',
+        'tema': {'motor': 'historia', 'ritmo': 'dinamico', 'formato': '16:9', 'duracao_cena': 30,
+                 'apresentador': True}},
+}
+
+
+def cmd_estilos():
+    print(f'docflow {VERSAO} · estilos (use `estilo: <nome>` no tema)\n')
+    for nome, e in ESTILOS.items():
+        print(f'  {nome}\n    {e["resumo"]}\n    exemplo: {e["exemplo"]}\n')
 
 
 # ---------------------------------------------------------------- tema / plano
 def carregar_tema(caminho):
     t = yaml.safe_load(open(caminho))
+    for k, v in ((ESTILOS.get(t.get('estilo', '')) or {}).get('tema') or {}).items():
+        t.setdefault(k, v)
     t['n_cenas'] = max(1, round(t['duracao_total'] / t['duracao_cena']))
     t['palavras_cena'] = int(t['duracao_cena'] * 2.2)   # ~2,2 palavras/s em narração calma
     t.setdefault('fatos', 'nenhum fato fornecido: use só conhecimento consolidado')
@@ -64,6 +102,8 @@ def cmd_roteiro(t, d, refazer=False):
         t['catalogo'] = reais.texto_catalogo(itens)
         t['planos_cena'] = '2 a 4' if t.get('ritmo') == 'dinamico' else '1 a 2'
         pedido = (RAIZ / 'roteiro/flow-reais.md').read_text().format(**t)
+    elif t.get('motor') == 'historia':
+        pedido = (RAIZ / 'roteiro/flow-historia.md').read_text().format(**t)
     else:
         pedido = (RAIZ / 'roteiro/flow-gpt.md').read_text().format(**t)
     modelo = os.environ.get('DOCFLOW_CODEX_MODELO', 'gpt-6-astra')
@@ -113,6 +153,12 @@ def cmd_gerar(t, d, motor):
         import montagem
         cmd_narrar(t, d)   # o clipe é cortado no tempo exato da fala
         reais.gerar(p, t, d, log, transicao(t), montagem.FOLGA)
+    elif motor == 'historia':   # b-roll do Agnes + narração; mapas e prints saem na montagem
+        from motores import historia
+        historia.gerar_broll(p, d, log)
+        historia.Montador(p, d, log).narrar()
+        log('gerar: b-roll e narração prontos (mapas ao vivo e prints são feitos no montar)')
+        return
     elif motor == 'flow':
         r = subprocess.run(['node', str(RAIZ / 'motores/flow.mjs'), 'gerar', str(d),
                             str(len(p['cenas'])), t['formato']])
@@ -147,6 +193,9 @@ def cmd_estatica(t, d, cenas):
 
 # ---------------------------------------------------------------- 3. narrar
 def cmd_narrar(t, d):
+    if t.get('motor') == 'historia':
+        from motores import historia
+        return historia.Montador(plano(d), d, log).narrar()
     sys.path.insert(0, str(Path.home() / 'projetos/videos-agnes'))
     import pipeline as va   # narrar() do videos-agnes: inemavox chatterbox com voz de referência
     p = plano(d)
@@ -210,6 +259,10 @@ def cmd_montar(t, d):
     from montagem import montar
     p = plano(d)
     musica = os.path.expanduser(t['musica']) if t.get('musica') else None
+    if t.get('motor') == 'historia':   # o CTA já é a última cena do roteiro
+        from motores import historia
+        historia.Montador(p, d, log, data_mapa=time.strftime('%d/%m/%y')).montar(d / 'final.mp4', musica)
+        return
     numeros = [c['n'] for c in p['cenas']]
     if t.get('cta', True):
         cmd_cta(t, d, numeros[-1])
@@ -225,6 +278,10 @@ MOTORES = {
     'flow': ['Imagens e vídeos: Google Flow (agente), automatizado no navegador'],
     'reais': ['Imagens: mapas, satélite e fotos reais (créditos abaixo), sem IA',
               'Gráficos: matplotlib, com os dados das fontes citadas'],
+    'historia': ['Cenas de cinema: Agnes AI (imagem e imagem → vídeo), por API',
+                 'Mapas animados ao vivo: earth.nullschool.net (Cameron Beccario), dados NOAA',
+                 'Prints de páginas oficiais com o trecho grifado (fonte e data na tela)',
+                 'Grafismos animados: Python/PIL, com os dados das fontes citadas'],
 }
 
 
@@ -290,9 +347,12 @@ def cmd_publicar(t, d, enviar=False):
                '--plano', str(plano_yt)]
     else:
         y = p['youtube']
+        arte = d / f'imagens/{int(t.get("thumb_cena", 1)):03d}.png'
+        if t.get('motor') == 'historia':
+            arte = d / f'broll/{t.get("thumb_broll", next(iter(p.get("broll", {})), ""))}.png'
         cmd = [str(yt), 'publicar', str(final), '--canal', t.get('canal', 'lives1'),
                '--title', y['titulo'], '--description', descricao(p, t),
-               '--tags', ','.join(y['tags']), '--thumb-arte', str(d / f'imagens/{int(t.get("thumb_cena", 1)):03d}.png'),
+               '--tags', ','.join(y['tags']), '--thumb-arte', str(arte),
                '--categoria', '27', '--dry-run']
     log(f'publicar: yt-pubx · canal {t.get("canal", "lives1")} · ' + ('ENVIANDO' if enviar else 'dry-run'))
     r = subprocess.run(cmd, capture_output=True, text=True)
@@ -309,14 +369,19 @@ def main():
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--version', action='version', version=VERSAO)
     ap.add_argument('etapa', choices=['roteiro', 'gerar', 'narrar', 'montar', 'publicar', 'tudo',
-                                      'estatica', 'descricao', 'flow-login'])
+                                      'estatica', 'descricao', 'flow-login', 'estilos', 'apresentador'])
     ap.add_argument('tema', nargs='?', help='temas/<x>.yaml')
     ap.add_argument('--motor', help='flow | agnes (padrão: o do tema.yaml)')
     ap.add_argument('--refazer', action='store_true', help='refaz o roteiro')
     ap.add_argument('--cenas', help='estatica: números das cenas, ex. 6 ou 2,6')
     ap.add_argument('--video', help='descricao: URL do vídeo já publicado')
     ap.add_argument('--enviar', action='store_true', help='publicar de verdade (sem dry-run)')
+    ap.add_argument('--look', help='apresentador: look do avatar do Nei no HeyGen (ex.: computador)')
+    ap.add_argument('--teste', action='store_true', help='apresentador: gera só a 1ª cena, para medir o custo')
     a = ap.parse_args()
+
+    if a.etapa == 'estilos':
+        return cmd_estilos()
 
     if a.etapa == 'flow-login':
         sys.exit(subprocess.run(['node', str(RAIZ / 'motores/flow.mjs'), 'login']).returncode)
@@ -340,6 +405,11 @@ def main():
         cmd_descricao(t, d, a.video)
     if a.etapa == 'publicar':
         cmd_publicar(t, d, a.enviar)
+    if a.etapa == 'apresentador':
+        from motores import historia
+        if not a.look:
+            sys.exit('apresentador: informe --look (liste com: node ~/.claude/skills/heygen-cli/scripts/heygen.mjs looks)')
+        historia.gerar_apresentador(plano(d), d, a.look, log, so_primeira=a.teste)
     log(f'[{a.etapa}] {time.time() - t0:.0f}s')
 
 

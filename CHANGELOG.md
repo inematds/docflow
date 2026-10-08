@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0 — 2026-10-08
+- Estilos: `./docflow estilos` lista o que dá para pedir (documentario, reais, alerta-vertical, historia, historia-apresentador); `estilo:` no tema liga os padrões.
+- Motor `historia` (estilo dos canais de divulgação): gancho, promessa, analogia, prova na tela (print de página oficial grifado), grafismos animados (termômetro, contador, capítulo, cartões, linha do tempo, citação, corte do oceano, CTA), mapas ao vivo do earth.nullschool e b-roll do Agnes; corte a cada ~4,8 s.
+- `./docflow apresentador --look X [--teste]`: avatar do Nei pelo HeyGen nos blocos marcados, com custo real medido por render.
+- Roteiro `roteiro/flow-historia.md`; tema exemplo `elnino-2026-historia` (piloto de 3 min).
+
 ## 0.5.0 — 2026-10-07
 - `refazer_ia` no modo `reais`: o Agnes refaz as fotos (img2img, a original como referência), para foto sem licença de reúso. Crédito na tela "Ilustração IA (Agnes) · inspirada em …"; mapas, satélite e gráficos ficam reais.
 

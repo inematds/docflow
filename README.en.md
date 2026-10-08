@@ -28,7 +28,7 @@ video. In it, everything was done by hand:
 
 Here each step is one command, and the image and video engine can be swapped.
 
-Version: **0.5.0**
+Version: **0.6.0**
 
 ---
 
@@ -122,6 +122,20 @@ repeated: they redo only what is missing. `roteiro --refazer` asks Codex for a n
 with a slow zoom, without video AI, and then you just run `montar` again. It is the feature of the
 "images only" channels mentioned in the reference video. The discarded clip goes to `tmp/descartes/`.
 To redo an AI clip, delete `videos/NNN.mp4` and run `gerar`: only that one is redone.
+
+### Styles: which video you can ask for
+
+`./docflow estilos` lists the ready-made styles; in the theme, `estilo: <name>` turns on each one's defaults.
+
+| Style | What it is | Example |
+|---|---|---|
+| `documentario` | AI-generated scenes (image → video), calm narration | [Egypt](https://www.youtube.com/watch?v=TsVY4UUc5gI) |
+| `reais` | real maps, satellite and photos, animated charts, numbers on screen | [El Niño in numbers](https://www.youtube.com/watch?v=IE_D18omUjE) |
+| `alerta-vertical` | 9:16 Short: ALERT on top, image above, live map below, word-by-word captions (hand-built prototype) | [El Niño ALERT](https://www.youtube.com/watch?v=6OzZWiQHHdw) |
+| `historia` | explainer in the style of science-communication channels: scene hook with a paradox, promise, analogy, **on-screen proof** (official page screenshot with the passage highlighted), animated graphics, earth.nullschool live maps and Agnes cinematic b-roll; a cut every 4–5 s | El Niño pilot (3 min) |
+| `historia-apresentador` | the same, with Nei's avatar (HeyGen, paid) in some blocks | El Niño pilot |
+
+In the `historia` style the script template (`roteiro/flow-historia.md`) returns, per block, the narration and the list of visuals. `gerar` makes the b-roll and narration; `montar` records the live maps, takes the screenshots and draws the graphics. Avatar: `./docflow apresentador themes/x.yaml --look computador --teste` renders only the first block and prints the real cost.
 
 ### Real images + dynamic pace mode (current topics, with data)
 
