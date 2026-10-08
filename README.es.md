@@ -28,7 +28,7 @@ tutorial. En él, todo se hacía a mano:
 
 Aquí cada etapa es un comando, y el motor de imagen y video se puede cambiar.
 
-Versión: **0.6.0**
+Versión: **0.7.0**
 
 ---
 
@@ -132,7 +132,7 @@ Para rehacer un clip de IA, borra `videos/NNN.mp4` y ejecuta `gerar`: solo se re
 | `documentario` | escenas generadas por IA (imagen → video), narración tranquila | [Egipto](https://www.youtube.com/watch?v=TsVY4UUc5gI) |
 | `reais` | mapas, satélite y fotos reales, gráficos animados, números en pantalla | [El Niño en números](https://www.youtube.com/watch?v=IE_D18omUjE) |
 | `alerta-vertical` | Short 9:16: ALERTA arriba, imagen arriba, mapa en vivo abajo, subtítulo palabra por palabra (prototipo hecho a mano) | [El Niño ALERTA](https://www.youtube.com/watch?v=6OzZWiQHHdw) |
-| `historia` | explicativo al estilo de los canales de divulgación: gancho de escena con paradoja, promesa, analogía, **prueba en pantalla** (captura de página oficial con el fragmento resaltado), gráficos animados, mapas en vivo de earth.nullschool y escenas de cine de Agnes; un corte cada 4–5 s | piloto El Niño (3 min) |
+| `historia` | explicativo al estilo de los canales de divulgación: apertura viral (frame 0 = arte de impacto con la frase, que también es la miniatura, y cortes de 1,5–2,4 s en los primeros ~20 s), promesa, analogía, **prueba en pantalla** (captura de página oficial con el fragmento resaltado), gráficos animados, mapas en vivo de earth.nullschool y escenas de cine de Agnes; un corte cada 4–5 s | piloto El Niño (3 min) |
 | `historia-apresentador` | lo mismo, con el avatar de Nei (HeyGen, de pago) en algunos bloques | piloto El Niño |
 
 En el estilo `historia` la plantilla de guion (`roteiro/flow-historia.md`) devuelve, por bloque, la narración y la lista de visuales. `gerar` hace el b-roll y la narración; `montar` graba los mapas en vivo, toma las capturas y dibuja los gráficos. Avatar: `./docflow apresentador temas/x.yaml --look computador --teste` genera solo el primer bloque y muestra el costo real.

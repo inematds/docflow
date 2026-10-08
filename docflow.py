@@ -23,7 +23,7 @@ import yaml
 
 RAIZ = Path(__file__).resolve().parent
 SAIDA = Path.home() / 'projetos/output/docflow'
-VERSAO = '0.6.0'
+VERSAO = '0.7.0'
 os.environ.setdefault('NODE_PATH', str(Path.home() / '.npm-global/lib/node_modules'))
 
 
@@ -156,6 +156,7 @@ def cmd_gerar(t, d, motor):
     elif motor == 'historia':   # b-roll do Agnes + narração; mapas e prints saem na montagem
         from motores import historia
         historia.gerar_broll(p, d, log)
+        historia.gerar_gancho(p, d, log)
         historia.Montador(p, d, log).narrar()
         log('gerar: b-roll e narração prontos (mapas ao vivo e prints são feitos no montar)')
         return
@@ -352,8 +353,9 @@ def cmd_publicar(t, d, enviar=False):
             arte = d / f'broll/{t.get("thumb_broll", next(iter(p.get("broll", {})), ""))}.png'
         cmd = [str(yt), 'publicar', str(final), '--canal', t.get('canal', 'lives1'),
                '--title', y['titulo'], '--description', descricao(p, t),
-               '--tags', ','.join(y['tags']), '--thumb-arte', str(arte),
-               '--categoria', '27', '--dry-run']
+               '--tags', ','.join(y['tags']), '--categoria', '27', '--dry-run']
+        # thumb = a arte do gancho (Codex, texto já desenhado); sem ela, b-roll + frase do yt-pubx
+        cmd += ['--thumb', str(d / 'thumb.jpg')] if (d / 'thumb.jpg').exists() else ['--thumb-arte', str(arte)]
     log(f'publicar: yt-pubx · canal {t.get("canal", "lives1")} · ' + ('ENVIANDO' if enviar else 'dry-run'))
     r = subprocess.run(cmd, capture_output=True, text=True)
     print(r.stdout[-2500:], r.stderr[-1500:])

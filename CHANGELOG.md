@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0 — 2026-10-08
+- Gancho viral no estilo `historia`: frame 0 = arte de impacto do Codex com a frase já desenhada (`gancho` no plano → `gancho.png`, que vira também a `thumb.jpg` do YouTube), zoom preso no canto da frase, e 7–10 cortes de 1,5–2,4 s na cena 1, com números entrando rápido (`anim` no contador e no termômetro).
+- `montar` recusa plano sem gancho (cena 1 sem `imagem` no frame 0, sem `segundos` ou com corte acima de 2,5 s); `"sem_gancho": true` libera. Durações da cena 1 se ajustam à narração.
+- Roteiro `flow-historia.md`: 1ª frase de choque com o sujeito nomeado, fatos com número, isca "fica até o fim".
+
 ## 0.6.0 — 2026-10-08
 - Estilos: `./docflow estilos` lista o que dá para pedir (documentario, reais, alerta-vertical, historia, historia-apresentador); `estilo:` no tema liga os padrões.
 - Motor `historia` (estilo dos canais de divulgação): gancho, promessa, analogia, prova na tela (print de página oficial grifado), grafismos animados (termômetro, contador, capítulo, cartões, linha do tempo, citação, corte do oceano, CTA), mapas ao vivo do earth.nullschool e b-roll do Agnes; corte a cada ~4,8 s.

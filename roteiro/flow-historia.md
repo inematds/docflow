@@ -14,9 +14,15 @@ respostas abaixo e devolve TUDO de uma vez, sem perguntar nada.
 {estrutura}
 
 ## Como o texto deve soar
-- Bloco 1, GANCHO: comece por uma cena concreta, com data e número ("Neste momento…",
-  "No dia 30 de setembro…"), e termine num paradoxo ou pergunta que só o vídeo responde.
-  Nada de "Olá" nem de apresentação do canal.
+- Bloco 1, GANCHO (os primeiros ~10–20 s decidem a retenção):
+  - a 1ª frase já é o choque, curta, com o sujeito nomeado (ex.: "Fogo no Norte. Água no Sul.");
+    nada de "Olá", "Neste vídeo", "Imagine que…", "Pense num…", "Se você…";
+  - logo depois, fatos concretos com número e lugar, e de onde vem a ameaça;
+  - termina com uma isca para ficar até o fim ("Fica até o fim: …" com o que a pessoa ganha).
+  - Visuais do bloco 1: o 1º é SEMPRE {{"tipo":"imagem","arquivo":"gancho.png","soco":true,"segundos":2.2}}
+    (frame 0 = arte de impacto com a frase desenhada, feita a partir do campo "gancho" da saída);
+    depois 7 a 10 cortes de 1,5–2,4 s, TODOS com "segundos", alternando b-roll, número grande
+    (contador/termometro com "anim":0.4) e prova; nada de mapa ou cartão parado no frame 0.
 - Bloco 2, PROMESSA: traga o assunto para a vida de quem assiste ("na sua casa", "no seu
   bolso") e prometa três coisas que a pessoa vai entender.
 - Explique o mecanismo com UMA analogia do dia a dia, criada por você (não copie analogias
@@ -49,6 +55,7 @@ Alterne os tipos; não repita o mesmo tipo em sequência; cada "prova" usa um tr
 Responda APENAS com um JSON válido, sem markdown, neste formato:
 {{
   "titulo": "...",
+  "gancho": {{"frase": "2 a 6 palavras em MAIÚSCULAS (vira o frame 0 e a thumb)", "destaques": "qual palavra em qual cor", "cena": "imagem de impacto, um foco só, sem outro texto"}},
   "broll": {{"id-curto": "prompt em inglês, cinematográfico, sem texto", "...": "..."}},
   "cenas": [
     {{"n": 1, "apresentador": false, "narracao": "...", "visuais": [{{"tipo": "mapa", "vista": "pacifico"}}]}}

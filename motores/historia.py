@@ -121,10 +121,14 @@ class Montador:
                    '-t', seg, '-c:v', 'libx264', '-crf', '19', out)
         elif t == 'prova':
             g.prova(out, seg, W, H, self.prova_base(v), selo=v.get('selo', ''))
-        elif t == 'imagem':
+        elif t == 'imagem':   # caminho relativo = dentro da pasta de saída (ex.: gancho.png)
             fr = int(seg * FPS) + 1
-            sh('ffmpeg', '-v', 'error', '-y', '-loop', '1', '-i', v['arquivo'], '-vf',
-               f"scale={W*2}:{H*2}:force_original_aspect_ratio=increase,crop={W*2}:{H*2},zoompan=z='min(1+0.0012*on,1.2)':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d={fr}:s={W}x{H}:fps={FPS},format=yuv420p",
+            arq = Path(v['arquivo']) if Path(v['arquivo']).is_absolute() else self.d / v['arquivo']
+            z = "min(1+0.0009*on,1.07)" if v.get("soco") else "min(1+0.0012*on,1.2)"
+            # soco (gancho): zoom preso no canto superior esquerdo, onde ficam a frase e a marca
+            xy = ('0', '0') if v.get('soco') else ('iw/2-iw/zoom/2', 'ih/2-ih/zoom/2')
+            sh('ffmpeg', '-v', 'error', '-y', '-loop', '1', '-i', arq, '-vf',
+               f"scale={W*2}:{H*2}:force_original_aspect_ratio=increase,crop={W*2}:{H*2},zoompan=z='{z}':x='{xy[0]}':y='{xy[1]}':d={fr}:s={W}x{H}:fps={FPS},format=yuv420p",
                '-t', seg, '-c:v', 'libx264', '-crf', '19', out)
         else:
             if 'cor' in kw:
@@ -182,11 +186,13 @@ class Montador:
                 seq.append(('avatar', None))
         else:
             seq = [('v', v) for v in vis]
+        # tudo com "segundos" (gancho): estica/encolhe por igual para fechar com a narração
+        escala = total / fixos if (not livres and fixos and not com_avatar) else 1.0
         n_av = sum(1 for k, _ in seq if k == 'avatar')
         if com_avatar:
             pedaco = (total - fixos) / (len(livres) + n_av)
         for i, (k, v) in enumerate(seq):
-            seg = (v.get('segundos') if v and 'segundos' in v else pedaco)
+            seg = (v['segundos'] * escala if v and 'segundos' in v else pedaco)
             if i == len(seq) - 1:
                 seg = max(1.0, total - t)
             nome = f'{n:02d}-{i:02d}'
@@ -209,7 +215,25 @@ class Montador:
         self.log(f'  cena {n}: {total:.1f}s, {len(clipes)} cortes' + (' (com apresentador)' if com_avatar else ''))
         return out, len(clipes)
 
+    def conferir_gancho(self):
+        """Frame 0 = imagem de impacto com o texto já desenhado (gancho.png) e cortes curtos até ~10 s.
+        Mesma regra do --strict do explicavideos; "sem_gancho": true no plano libera."""
+        if self.p.get('sem_gancho'):
+            return
+        c1 = self.p['cenas'][0]
+        v0 = c1['visuais'][0]
+        if v0['tipo'] != 'imagem':
+            raise RuntimeError('gancho: a cena 1 tem de abrir com {"tipo":"imagem","arquivo":"gancho.png"} '
+                               '(frame 0 com a frase de impacto desenhada); "sem_gancho": true libera')
+        livres = [v for v in c1['visuais'] if 'segundos' not in v]
+        if livres:
+            raise RuntimeError('gancho: na cena 1 todo visual leva "segundos" (1 a 2,5 s cada)')
+        longos = [v['tipo'] for v in c1['visuais'][1:] if v['segundos'] > 2.5]
+        if longos:
+            raise RuntimeError(f'gancho: cortes acima de 2,5 s na cena 1: {longos}')
+
     def montar(self, final, musica=None):
+        self.conferir_gancho()
         cenas, cortes = [], 0
         for c in self.p['cenas']:
             o, k = self.cena(c)
@@ -247,6 +271,39 @@ def gerar_broll(p, d, log=print):
         falhas = [k for k, ok in ex.map(um, p.get('broll', {})) if not ok]
     if falhas:
         log(f'  b-roll sem vídeo: {falhas} (a montagem usa a imagem com zoom)')
+
+
+def gerar_gancho(p, d, log=print):
+    """plano['gancho'] = {"frase": "2 a 6 palavras", "destaques": "...", "cena": "..."} -> <d>/gancho.png.
+    Arte do Codex (image_gen, pela assinatura) com a frase JÁ desenhada: é o frame 0 e a thumb."""
+    d = Path(d)
+    out = d / 'gancho.png'
+    gk = p.get('gancho')
+    if out.exists() or not gk:
+        return out if out.exists() else None
+    pasta = d / 'tmp/gancho'
+    pasta.mkdir(parents=True, exist_ok=True)
+    prompt = f"""Use sua ferramenta de geração de imagem (image_gen) para criar UMA imagem horizontal 16:9 de impacto,
+estilo thumbnail viral de canal de ciência, e salve o PNG como arte.png neste diretório. Não crie nem edite outro arquivo.
+
+Assunto do vídeo: {p.get('titulo', '')}
+Frase escrita na imagem (ortografia exata, com acentos): "{gk['frase']}"
+Cores das palavras: {gk.get('destaques', 'uma palavra-chave em amarelo, o resto em branco')}
+Cena: {gk['cena']}
+
+Regras: a frase grande, maiúsculas bold, contorno escuro, legível no celular, cerca de 1/3 da imagem;
+etiqueta pequena "INEMA.CLUB" (amarelo sobre preto) no canto superior esquerdo; nenhum outro texto,
+número ou letra solta; alto contraste, cores saturadas, um foco só. Ao terminar, responda só "ok"."""
+    log('  gancho: arte do Codex (image_gen)...')
+    sp.run(['codex', 'exec', '--skip-git-repo-check', '--dangerously-bypass-approvals-and-sandbox', '-'],
+           input=prompt, cwd=pasta, capture_output=True, text=True, timeout=900)
+    arte = pasta / 'arte.png'
+    if not arte.exists():
+        raise RuntimeError('gancho: o Codex não gerou arte.png')
+    Image.open(arte).convert('RGB').resize((W, H), Image.LANCZOS).save(out)
+    Image.open(arte).convert('RGB').resize((1280, 720), Image.LANCZOS).save(d / 'thumb.jpg', quality=92)
+    log(f'  gancho: {out} (+ thumb.jpg)')
+    return out
 
 
 HEYGEN = Path.home() / '.claude/skills/heygen-cli/scripts/heygen.mjs'

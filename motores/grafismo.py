@@ -94,13 +94,13 @@ def rotulo_rodape(d, W, H, txt, f_alpha=1.0):
 
 
 # ---------------------------------------------------------------- termômetro
-def termometro(saida, segundos, W, H, valor, frac=0.85, rotulo='', fonte_txt=''):
+def termometro(saida, segundos, W, H, valor, frac=0.85, rotulo='', fonte_txt='', anim=1.8):
     """Termômetro enchendo + número contando até `valor` (ex.: 3.2 -> "+3,2 °C")."""
     out, n = Saida(saida, W, H), int(segundos * FPS)
     cx, topo, base = int(W * 0.32), int(H * 0.16), int(H * 0.80)
     larg, bulbo = int(W * 0.045), int(W * 0.06)
     for f in range(n):
-        t = ease(f / (FPS * 1.8))
+        t = ease(f / (FPS * anim))
         im = fundo(W, H); d = ImageDraw.Draw(im); grade(d, W, H, f)
         d.rounded_rectangle((cx - larg, topo, cx + larg, base), larg, fill=(30, 50, 90), outline=BRANCO, width=6)
         d.ellipse((cx - bulbo, base - bulbo // 2, cx + bulbo, base + bulbo * 3 // 2), fill=QUENTE, outline=BRANCO, width=6)
@@ -120,11 +120,11 @@ def termometro(saida, segundos, W, H, valor, frac=0.85, rotulo='', fonte_txt='')
 
 
 # ---------------------------------------------------------------- contador
-def contador(saida, segundos, W, H, valor, casas=0, prefixo='', sufixo='', rotulo='', antes='', cor=AMARELO, fonte_txt='', milhar=True):
+def contador(saida, segundos, W, H, valor, casas=0, prefixo='', sufixo='', rotulo='', antes='', cor=AMARELO, fonte_txt='', milhar=True, anim=1.6):
     """Número grande contando de 0 até `valor`, com rótulo e linha "antes" opcional."""
     out, n = Saida(saida, W, H), int(segundos * FPS)
     for f in range(n):
-        t = ease(f / (FPS * 1.6))
+        t = ease(f / (FPS * anim))
         im = fundo(W, H); d = ImageDraw.Draw(im); grade(d, W, H, f)
         v = num_br(valor * t, casas) if milhar else f'{valor * t:.{casas}f}'
         s = prefixo + v + sufixo
