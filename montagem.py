@@ -33,7 +33,8 @@ def sh(cmd):
         raise RuntimeError('ffmpeg: ' + r.stderr[-600:])
 
 
-def montar(d, numeros, formato, musica, saida, log):
+def montar(d, numeros, formato, musica, saida, log, x=X):
+    X = x   # transição: 0,7 s (calmo) ou 0,35 s (dinâmico)
     W, H = RES.get(formato, RES['16:9'])
     T = d / 'tmp'
     faltam = [n for n in numeros if not (d / f'videos/{n:03d}.mp4').exists()

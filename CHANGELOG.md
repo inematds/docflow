@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0 — 2026-10-07
+- Motor `reais`: imagens reais (mapas, satélite, fotos com licença) em vez de IA, escolhidas pelo roteiro num catálogo (`creditos.json`), com crédito na tela e na descrição.
+- `ritmo: dinamico`: cortes a cada 2–3 s (foto longa vira dois cortes), números em destaque, rótulo de lugar e data, fusão de 0,35 s entre cenas.
+- Gráficos animados (linha e barras) a partir de `graficos:` no tema, com vírgula decimal.
+- Roteiro próprio para o modo (`roteiro/flow-reais.md`). Tema exemplo: `elnino-2026-reais`.
+- Correções do drawtext: letras com acento cortadas no fim, `%` sumindo com o texto.
+
 ## 0.3.0 — 2026-10-07
 - CTA no fim de todo vídeo: cena extra com INEMA.CLUB sobre a última imagem desfocada e a voz chamando para o site (`cta: false` desliga; `cta_fala` troca a frase).
 - Tema aceita `fatos:`, `estrutura:` e `fontes:` (vídeo de assunto atual sem número inventado). Tema novo: El Niño 2026.

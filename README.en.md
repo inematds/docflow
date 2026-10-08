@@ -28,7 +28,7 @@ video. In it, everything was done by hand:
 
 Here each step is one command, and the image and video engine can be swapped.
 
-Version: **0.3.0**
+Version: **0.4.0**
 
 ---
 
@@ -51,6 +51,7 @@ Version: **0.3.0**
 | Engine | Status | Note |
 |---|---|---|
 | `agnes` (B) | ✅ **tested**: the sample video came out of it | Agnes API authorized by Nei on 07/10/2026 |
+| `reais` | ✅ **tested**: El Niño 2026 with maps, satellite, photos and charts | no image AI; only reusable-licence images |
 | `flow` (A) | ⏳ **written, not validated** | the `inematds` account login is missing in the robot profile; the first real use calibrates the buttons |
 | `kie` (B) | ❌ not implemented | paid API: only with explicit authorization |
 | `local` (C) | ❌ not implemented | fallback: flux2-klein + pixflow |
@@ -122,6 +123,23 @@ with a slow zoom, without video AI, and then you just run `montar` again. It is 
 "images only" channels mentioned in the reference video. The discarded clip goes to `tmp/descartes/`.
 To redo an AI clip, delete `videos/NNN.mp4` and run `gerar`: only that one is redone.
 
+### Real images + dynamic pace mode (current topics, with data)
+
+For news, science or any topic that calls for **real images** (maps, satellite, photos) and
+**numbers**, set in the theme: `motor: reais`, `ritmo: dinamico` (cuts every 2–3 s; `calmo` =
+1–2 shots per scene), `imagens_reais:` (a folder with `creditos.json`), `fatos:` (the dated
+numbers the narration may use) and `graficos:` (series that become animated line or bar charts).
+
+- `creditos.json`: list of images with `arquivo`, `descricao`, `data`, `credito` (the line shown
+  on screen), `licenca` and `fonte_url`. Only reusable licences (NOAA, NASA, INPE, Copernicus,
+  Wikimedia CC…). Archive photos are labelled "Foto de arquivo (year)".
+- The script (Codex) picks catalogue images for each part of the narration and shows the number
+  on screen when the narration cites it. Every shot moves (zoom or pan), with credit and a
+  place/date label.
+- `gerar` narrates first and cuts each scene to the exact length of its speech. The YouTube
+  description lists the credits of the images used.
+- Example: `temas/elnino-2026-reais.yaml` (data from 2026-10-07).
+
 ### The theme (the 6 questions of the flow)
 
 ```yaml
@@ -133,7 +151,7 @@ duracao_cena: 10       # 4. duration of each scene (s) → 6 scenes
 formato: "16:9"        # 5. format
 idioma: "português do Brasil"
 referencias: "nenhuma" # 6. references
-motor: agnes           # flow | agnes
+motor: agnes           # flow | agnes | reais
 voz: nei
 musica: ~/projetos/inemavox/jobs/audio_library/music/<faixa>.mp3
 canal: lives10         # yt-pubx channel

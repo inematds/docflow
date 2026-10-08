@@ -28,7 +28,7 @@ tutorial. En él, todo se hacía a mano:
 
 Aquí cada etapa es un comando, y el motor de imagen y video se puede cambiar.
 
-Versión: **0.3.0**
+Versión: **0.4.0**
 
 ---
 
@@ -51,6 +51,7 @@ Versión: **0.3.0**
 | Motor | Estado | Observación |
 |---|---|---|
 | `agnes` (B) | ✅ **probado**: el video modelo salió de él | API de Agnes autorizada por Nei el 07/10/2026 |
+| `reais` | ✅ **probado**: El Niño 2026 con mapas, satélite, fotos y gráficos | sin IA de imagen; solo imágenes con licencia de reutilización |
 | `flow` (A) | ⏳ **escrito, no validado** | falta el inicio de sesión de la cuenta `inematds` en el perfil del robot; el primer uso real calibra los botones |
 | `kie` (B) | ❌ no implementado | API de pago: solo con autorización explícita |
 | `local` (C) | ❌ no implementado | respaldo: flux2-klein + pixflow |
@@ -122,6 +123,24 @@ con un zoom lento, sin IA de video, y después basta con volver a ejecutar `mont
 "solo de imágenes" mencionado en el video de referencia. El clip descartado va a `tmp/descartes/`.
 Para rehacer un clip de IA, borra `videos/NNN.mp4` y ejecuta `gerar`: solo se rehace ese.
 
+### Modo imágenes reales + ritmo dinámico (temas actuales, con datos)
+
+Para noticias, ciencia o cualquier tema que pida **imagen real** (mapa, satélite, foto) y
+**números**, ponga en el tema: `motor: reais`, `ritmo: dinamico` (cortes cada 2–3 s; `calmo` =
+1–2 planos por escena), `imagens_reais:` (carpeta con `creditos.json`), `fatos:` (los números
+fechados que la narración puede usar) y `graficos:` (series que se vuelven gráficos animados de
+línea o barras).
+
+- `creditos.json`: lista de imágenes con `arquivo`, `descricao`, `data`, `credito` (la línea que
+  aparece en pantalla), `licenca` y `fonte_url`. Solo licencias de reutilización (NOAA, NASA,
+  INPE, Copernicus, Wikimedia CC…). Las fotos de archivo llevan "Foto de arquivo (año)".
+- El guion (Codex) elige las imágenes del catálogo para cada parte de la narración y muestra el
+  número en pantalla cuando la narración lo cita. Cada plano tiene movimiento (zoom o paneo),
+  crédito y la etiqueta de lugar y fecha.
+- `gerar` narra primero y corta cada escena al tiempo exacto de su voz. La descripción de YouTube
+  incluye los créditos de las imágenes usadas.
+- Ejemplo: `temas/elnino-2026-reais.yaml` (datos del 07/10/2026).
+
 ### El tema (las 6 preguntas del flow)
 
 ```yaml
@@ -133,7 +152,7 @@ duracao_cena: 10       # 4. duración de cada escena (s) → 6 escenas
 formato: "16:9"        # 5. formato
 idioma: "português do Brasil"
 referencias: "nenhuma" # 6. referencias
-motor: agnes           # flow | agnes
+motor: agnes           # flow | agnes | reais
 voz: nei
 musica: ~/projetos/inemavox/jobs/audio_library/music/<faixa>.mp3
 canal: lives10         # canal de yt-pubx

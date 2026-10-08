@@ -28,7 +28,7 @@ tutorial. Nele, tudo era feito à mão:
 
 Aqui cada etapa é um comando, e o motor de imagem e vídeo pode ser trocado.
 
-Versão: **0.3.0**
+Versão: **0.4.0**
 
 ---
 
@@ -51,6 +51,7 @@ Versão: **0.3.0**
 | Motor | Estado | Observação |
 |---|---|---|
 | `agnes` (B) | ✅ **testado**: o vídeo modelo saiu dele | API Agnes autorizada pelo Nei em 07/10/2026 |
+| `reais` | ✅ **testado**: El Niño 2026 com mapas, satélite, fotos e gráficos | sem IA de imagem; só imagens com licença de reúso |
 | `flow` (A) | ⏳ **escrito, não validado** | falta o login da conta `inematds` no perfil do robô; o 1º uso real calibra os botões |
 | `kie` (B) | ❌ não implementado | API paga: só com autorização explícita |
 | `local` (C) | ❌ não implementado | reserva: flux2-klein + pixflow |
@@ -122,6 +123,37 @@ com zoom lento, sem IA de vídeo, e depois basta `montar` de novo. É o recurso 
 "só de imagens" citado no vídeo de referência. O clipe descartado vai para `tmp/descartes/`.
 Para refazer um clipe de IA, apague `videos/NNN.mp4` e rode `gerar`: só ele é refeito.
 
+### Modo imagens reais + ritmo dinâmico (assunto atual, com dados)
+
+Para notícia, ciência ou qualquer assunto que pede **imagem real** (mapa, satélite, foto) e
+**números**, use no tema:
+
+```yaml
+motor: reais
+ritmo: dinamico            # cortes a cada 2–3 s; "calmo" = 1–2 planos por cena
+imagens_reais: ~/projetos/output/docflow/<slug>/fontes   # pasta com creditos.json
+fatos: |                   # os números que a narração pode usar, com data
+  - ...
+graficos:                  # viram gráfico animado (linha ou barras)
+  - arquivo: g-exemplo
+    titulo: "..."
+    tipo: linha            # ou barras (realce: índice da barra em destaque)
+    rotulos: ["jul", "ago", "set"]
+    valores: [1.7, 2.6, 3.2]
+    sufixo: " °C"
+    fonte: "NOAA CPC"
+```
+
+- `creditos.json`: lista de imagens com `arquivo`, `descricao`, `data`, `credito` (a linha que
+  aparece na tela), `licenca` e `fonte_url`. Use só imagem com licença de reúso (NOAA, NASA,
+  INPE, Copernicus, Wikimedia CC…). Foto de arquivo leva "Foto de arquivo (ano)" no crédito.
+- O roteiro (Codex) escolhe as imagens do catálogo para cada trecho da fala e põe o número em
+  destaque quando a fala cita um dado. Cada plano tem movimento (zoom ou pan), crédito no canto
+  e o rótulo do lugar e da data.
+- `gerar` narra primeiro e corta cada cena no tempo exato da fala. A descrição do YouTube ganha
+  a lista de créditos das imagens usadas.
+- Exemplo: `temas/elnino-2026-reais.yaml` (dados de 07/10/2026).
+
 ### O tema (as 6 perguntas do flow)
 
 ```yaml
@@ -133,7 +165,7 @@ duracao_cena: 10       # 4. duração de cada cena (s) → 6 cenas
 formato: "16:9"        # 5. formato
 idioma: "português do Brasil"
 referencias: "nenhuma" # 6. referências
-motor: agnes           # flow | agnes
+motor: agnes           # flow | agnes | reais
 voz: nei
 musica: ~/projetos/inemavox/jobs/audio_library/music/<faixa>.mp3
 canal: lives10         # canal do yt-pubx

@@ -23,7 +23,7 @@ import yaml
 
 RAIZ = Path(__file__).resolve().parent
 SAIDA = Path.home() / 'projetos/output/docflow'
-VERSAO = '0.3.0'
+VERSAO = '0.4.0'
 os.environ.setdefault('NODE_PATH', str(Path.home() / '.npm-global/lib/node_modules'))
 
 
@@ -34,6 +34,7 @@ def carregar_tema(caminho):
     t['palavras_cena'] = int(t['duracao_cena'] * 2.2)   # ~2,2 palavras/s em narração calma
     t.setdefault('fatos', 'nenhum fato fornecido: use só conhecimento consolidado')
     t.setdefault('estrutura', 'livre, em ordem cronológica')
+    t.setdefault('ritmo', 'calmo')   # calmo | dinamico (cortes a cada 2–3 s)
     d = SAIDA / t['slug']
     for sub in ('imagens', 'videos', 'narracao', 'tmp'):
         (d / sub).mkdir(parents=True, exist_ok=True)
@@ -57,7 +58,14 @@ def cmd_roteiro(t, d, refazer=False):
     if alvo.exists() and not refazer:
         log(f'roteiro: já existe {alvo} (use --refazer)')
         return json.load(open(alvo))
-    pedido = (RAIZ / 'roteiro/flow-gpt.md').read_text().format(**t)
+    if t.get('motor') == 'reais':   # imagens reais: o roteiro escolhe do catálogo
+        from motores import reais
+        itens = reais.catalogo(t, d)
+        t['catalogo'] = reais.texto_catalogo(itens)
+        t['planos_cena'] = '2 a 4' if t.get('ritmo') == 'dinamico' else '1 a 2'
+        pedido = (RAIZ / 'roteiro/flow-reais.md').read_text().format(**t)
+    else:
+        pedido = (RAIZ / 'roteiro/flow-gpt.md').read_text().format(**t)
     modelo = os.environ.get('DOCFLOW_CODEX_MODELO', 'gpt-6-astra')
     log(f'roteiro: Codex ({modelo}) escrevendo {t["n_cenas"]} cenas...')
     r = subprocess.run(['codex', 'exec', '-m', modelo, '-s', 'read-only',
@@ -85,12 +93,13 @@ def escrever_blocos(p, t, d):
     vid = [f'Animate each image into a {t["duracao_cena"]}-second video, {t["formato"]}, '
            f'keeping the same number as the image (image 001 -> video 001).\n']
     for c in p['cenas']:
-        img.append(f'{c["n"]:03d}: {c["prompt_imagem"]}')
-        vid.append(f'{c["n"]:03d}: {c["prompt_video"]}')
+        img.append(f'{c["n"]:03d}: ' + (c.get('prompt_imagem') or
+                   ' + '.join(q.get('imagem', '') for q in c.get('planos', []))))
+        vid.append(f'{c["n"]:03d}: {c.get("prompt_video", "(imagem real com movimento)")}')
     (d / 'bloco-imagens.txt').write_text('\n'.join(img) + '\n')
     (d / 'bloco-videos.txt').write_text('\n'.join(vid) + '\n')
     (d / 'narracao.txt').write_text('\n'.join(c['narracao'] for c in p['cenas']) + '\n')
-    (d / 'musica.txt').write_text(p['prompt_musica'] + '\n')
+    (d / 'musica.txt').write_text(p.get('prompt_musica', '') + '\n')
 
 
 # ---------------------------------------------------------------- 2. gerar
@@ -99,6 +108,11 @@ def cmd_gerar(t, d, motor):
     if motor == 'agnes':
         from motores import agnes
         agnes.gerar(p, t, d, log)
+    elif motor == 'reais':
+        from motores import reais
+        import montagem
+        cmd_narrar(t, d)   # o clipe é cortado no tempo exato da fala
+        reais.gerar(p, t, d, log, transicao(t), montagem.FOLGA)
     elif motor == 'flow':
         r = subprocess.run(['node', str(RAIZ / 'motores/flow.mjs'), 'gerar', str(d),
                             str(len(p['cenas'])), t['formato']])
@@ -169,21 +183,27 @@ def cmd_cta(t, d, ultima):
     if not mp4.exists():
         marca, linha = CTA_TEXTO
         (d / 'tmp').mkdir(exist_ok=True)
-        (d / 'tmp/cta-marca.txt').write_text(marca)
-        (d / 'tmp/cta-linha.txt').write_text(linha)
+        from motores.reais import pad   # ffmpeg 6.1 corta letras de texto com acento
+        (d / 'tmp/cta-marca.txt').write_text(pad(marca))
+        (d / 'tmp/cta-linha.txt').write_text(pad(linha))
         fps, seg = 30, 8
         aparece = "alpha='min(1,max(0,(t-0.6)/0.8))'"
         sh_vf = (f'scale={W * 2}:-2,zoompan=z=\'min(1+0.0006*on,1.15)\':x=\'iw/2-(iw/zoom/2)\':'
                  f'y=\'ih/2-(ih/zoom/2)\':d={fps * seg}:s={W}x{H}:fps={fps},'
                  f'gblur=sigma=18,eq=brightness=-0.28:saturation=0.7,'
-                 f"drawtext=fontfile={FONTE}:textfile={d}/tmp/cta-marca.txt:fontsize={H // 6}:"
+                 f"drawtext=expansion=none:fontfile={FONTE}:textfile={d}/tmp/cta-marca.txt:fontsize={H // 6}:"
                  f"fontcolor=#f0e805:x=(w-text_w)/2:y=(h/2)-text_h:{aparece},"
-                 f"drawtext=fontfile={FONTE}:textfile={d}/tmp/cta-linha.txt:fontsize={H // 22}:"
+                 f"drawtext=expansion=none:fontfile={FONTE}:textfile={d}/tmp/cta-linha.txt:fontsize={H // 22}:"
                  f"fontcolor=white:x=(w-text_w)/2:y=(h/2)+{H // 18}:{aparece}")
         subprocess.run(['ffmpeg', '-nostdin', '-loglevel', 'error', '-loop', '1',
                         '-i', str(d / f'imagens/{ultima:03d}.png'), '-vf', sh_vf, '-t', str(seg),
                         '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-y', str(mp4)], check=True)
     log('  cta: INEMA.CLUB no fim')
+
+
+def transicao(t):
+    """Fusão entre cenas: 0,7 s no ritmo calmo, 0,35 s no dinâmico."""
+    return 0.35 if t.get('ritmo') == 'dinamico' else 0.7
 
 
 def cmd_montar(t, d):
@@ -194,7 +214,7 @@ def cmd_montar(t, d):
     if t.get('cta', True):
         cmd_cta(t, d, numeros[-1])
         numeros.append(CTA)
-    final = montar(d, numeros, t['formato'], musica, d / 'final.mp4', log)
+    final = montar(d, numeros, t['formato'], musica, d / 'final.mp4', log, x=transicao(t))
     log(f'montar: {final}')
 
 
@@ -203,7 +223,16 @@ MOTORES = {
     'agnes': ['Imagens: Agnes AI (agnes-image-2.1-flash), por API',
               'Vídeo de cada cena: Agnes AI (agnes-video-v2.0, imagem → vídeo), por API'],
     'flow': ['Imagens e vídeos: Google Flow (agente), automatizado no navegador'],
+    'reais': ['Imagens: mapas, satélite e fotos reais (créditos abaixo), sem IA',
+              'Gráficos: matplotlib, com os dados das fontes citadas'],
 }
+
+
+def creditos_imagens(p, t):
+    if t.get('motor') != 'reais':
+        return []
+    from motores import reais
+    return ['', '🖼️ Créditos das imagens', *('• ' + x for x in reais.creditos_usados(p, t, SAIDA / t['slug']))]
 
 
 def descricao(p, t):
@@ -222,6 +251,7 @@ def descricao(p, t):
               *([f'• Música: {credito}'] if musica else []),
               '• Montagem: ffmpeg, local',
               '• Publicação: YouTube Data API, via yt-pubx (https://github.com/inematds/yt-pubx)',
+              *creditos_imagens(p, t),
               '',
               '📚 INEMA.CLUB: plataforma de educação gratuita, com cursos, guias e projetos '
               'abertos de inteligência artificial. Acesse: https://inema.club']

@@ -1,0 +1,86 @@
+# El Niño 2026 com imagens REAIS (mapas, satélite, fotos) e gráficos de dados, ritmo dinâmico.
+# Dados pesquisados em 07/10/2026 (fontes no fim). Previsão é previsão.
+slug: elnino-2026-reais
+tema: "El Niño 2026 em números: o Pacífico mais quente da série, seca e fogo no Norte, temporais e enchentes no Sul, e como se preparar"
+estilo: "imagens reais: mapas, satélite e fotos"
+duracao_total: 110
+duracao_cena: 10
+formato: "16:9"
+idioma: "português do Brasil"
+referencias: "nenhuma"
+
+motor: reais
+ritmo: dinamico
+imagens_reais: ~/projetos/output/docflow/elnino-2026-reais/fontes
+voz: nei
+musica: ~/projetos/inemavox/jobs/audio_library/music/freesound_756425_Tech_Corporation_80bpm_loop.mp3
+thumb_cena: 1
+canal: lives10
+
+fatos: |
+  - Pacífico (NOAA, índice Niño 3.4, semanal): anomalia de +1,7 °C em 1º de julho, +2,6 °C em 26 de agosto e +3,2 °C na semana de 30 de setembro de 2026.
+  - ONI (média de 3 meses, NOAA): +2,16 °C em julho-agosto-setembro de 2026, o valor mais alto já registrado para esse trimestre desde 1950. Picos de eventos anteriores: 1982-83 +2,14; 1997-98 +2,37; 2015-16 +2,59; 2023-24 +1,99. Em 2026 ainda está subindo.
+  - NOAA (10 de setembro): mais de 90% de chance de El Niño muito forte; 75% de chance de evento histórico, o mais forte desde 1950, em outubro-novembro-dezembro. OMM: pico previsto entre novembro e dezembro; Inmet: El Niño deve seguir pelo menos até o primeiro trimestre de 2027.
+  - Calor: onda de calor com alerta vermelho do Inmet a partir de 26 de setembro, em oito estados (MT, MS, MG, GO, RJ, SP, PR, SC). Previsão do Inmet para outubro: calor acima da média em grande parte do país, até 2 °C acima em partes de Goiás, Distrito Federal e Minas.
+  - Seca no Norte: o Rio Negro em Manaus caiu de 28,50 m em 30 de junho para 18,59 m em 2 de outubro de 2026, quase dez metros. Em 2023 chegou ao mínimo de 12,70 m. A Defesa Civil do Amazonas diz que a estiagem pode ser parecida com a de 2023.
+  - Fogo (INPE): a Amazônia teve 12.562 focos de calor em setembro de 2026, contra 7.211 em setembro de 2025, alta de 74%. Agosto: 9.206 contra 6.094. Fumaça encobriu Manaus. No Brasil todo, setembro teve 13,6% menos focos que em 2025 e o Cerrado caiu 44%: o fogo se concentrou na Amazônia.
+  - Sul, temporais de 20 e 21 de setembro no RS: 4 mortes, danos em 151 municípios, 194,6 mm de chuva em 12 horas em Jaquirana e rajada de 126,7 km/h em Hulha Negra.
+  - Sul, chuvas de 25 a 28 de setembro: 39 mil pessoas afetadas no RS e 6.088 desalojados; em Santa Catarina, 7 municípios em situação de emergência. Em 6 de outubro, alerta de risco muito alto de inundação no rio Uruguai, em Uruguaiana e Itaqui.
+  - Próximos meses (Inmet): menos chuva e mais calor no Norte; chuva acima da média no Sul; risco de fogo no centro-norte e de cheias no Sul.
+  - Como se preparar (Defesa Civil): mande seu CEP por SMS para 40199 para receber alertas, é grátis; trinta centímetros de água já arrastam um carro, nunca atravesse área alagada; tenha um plano da família e saiba para onde ir; emergência 199 (Defesa Civil) e 193 (Bombeiros). No calor: beba água, evite sol das 10 às 16 horas, cuide de idosos, crianças e animais. Na seca: não faça queimadas e não jogue bituca de cigarro.
+
+estrutura: |
+  1. Gancho: o Pacífico está 3,2 graus acima do normal, o El Niño de 2026 corre num ritmo nunca visto.
+  2. O que é o El Niño em uma frase e a curva do Pacífico de julho a setembro (gráfico semanal).
+  3. Comparação histórica: 2026 já passou o pico de 1982 e ainda sobe; previsão de evento histórico e pico entre novembro e dezembro (gráfico dos picos).
+  4. Calor: onda de calor com alerta vermelho em oito estados e outubro acima da média.
+  5. Seca no Norte: o Rio Negro caiu quase dez metros desde junho (gráfico do Rio Negro).
+  6. Fogo: setembro com 74% mais focos na Amazônia, fumaça em Manaus (gráfico de focos).
+  7. Contraste: no Brasil todo os focos caíram; o fogo se concentrou na Amazônia.
+  8. Sul: temporais de setembro, quatro mortes, chuva e vento extremos.
+  9. Enchentes: dezenas de milhares de afetados no RS, emergência em SC, alerta no rio Uruguai.
+  10. Próximos meses: o que a previsão indica para Norte e Sul até o início de 2027.
+  11. Como se preparar: SMS 40199, água nunca, plano da família, calor e queimadas.
+
+fontes: "NOAA CPC (diagnóstico ENSO de 10/09/2026, índices Niño 3.4 semanal e ONI); OMM (03/09/2026); Inmet (alertas e prognóstico de outubro); INPE Programa Queimadas (focos AQUA_M-T, set/2026); Porto de Manaus/Rios de Notícias (cota do Rio Negro); Defesa Civil do RS e de SC; Agência Brasil."
+
+graficos:
+  - arquivo: g-nino34-semanal
+    titulo: "Pacífico cada vez mais quente"
+    subtitulo: "Anomalia semanal no Niño 3.4, em °C (2026)"
+    tipo: linha
+    rotulos: ["01/jul", "29/jul", "26/ago", "02/set", "09/set", "16/set", "23/set", "30/set"]
+    valores: [1.7, 2.4, 2.6, 2.8, 2.8, 3.0, 3.1, 3.2]
+    formato: "{:+.1f}"
+    sufixo: " °C"
+    limiares: [[1.5, "#f91f06"]]
+    fonte: "NOAA CPC"
+  - arquivo: g-oni-picos
+    titulo: "Os maiores El Niños desde 1950"
+    subtitulo: "Pico do ONI (média de 3 meses), em °C; 2026 ainda subindo"
+    tipo: barras
+    rotulos: ["1982-83", "1997-98", "2015-16", "2023-24", "2026 (até set)"]
+    valores: [2.14, 2.37, 2.59, 1.99, 2.16]
+    realce: 4
+    formato: "{:+.2f}"
+    sufixo: " °C"
+    fonte: "NOAA CPC (ONI)"
+  - arquivo: g-rio-negro
+    titulo: "Rio Negro em Manaus"
+    subtitulo: "Cota do rio em metros (2026); mínimo de 2023: 12,70 m"
+    tipo: linha
+    rotulos: ["30/jun", "01/set", "21/set", "02/out"]
+    valores: [28.50, 24.09, 20.66, 18.59]
+    formato: "{:.2f}"
+    sufixo: " m"
+    limiares: [[12.70, "#f91f06"]]
+    fonte: "Porto de Manaus / Rios de Notícias"
+  - arquivo: g-focos-amazonia
+    titulo: "Fogo na Amazônia"
+    subtitulo: "Focos de calor por mês (satélite de referência)"
+    tipo: barras
+    rotulos: ["ago 2025", "ago 2026", "set 2025", "set 2026"]
+    valores: [6094, 9206, 7211, 12562]
+    realce: 3
+    milhar: true
+    fonte: "INPE Programa Queimadas"
