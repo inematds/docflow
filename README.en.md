@@ -28,7 +28,7 @@ video. In it, everything was done by hand:
 
 Here each step is one command, and the image and video engine can be swapped.
 
-Version: **0.2.0**
+Version: **0.3.0**
 
 ---
 
@@ -136,7 +136,7 @@ referencias: "nenhuma" # 6. references
 motor: agnes           # flow | agnes
 voz: nei
 musica: ~/projetos/inemavox/jobs/audio_library/music/<faixa>.mp3
-canal: lives1          # yt-pubx channel
+canal: lives10         # yt-pubx channel
 ```
 
 ### What comes out in `~/projetos/output/docflow/<slug>/`
@@ -156,6 +156,7 @@ canal: lives1          # yt-pubx channel
 - Fade from black at the start and to black at the end.
 - Ambient sound from the clips at 16%.
 - Music at 30%, which ducks automatically when the voice speaks (sidechain), with fade in and fade out.
+- At the end, a CTA scene: INEMA.CLUB over the blurred last image, with the voice inviting viewers to the site (`cta: false` in the theme turns it off).
 
 ## Sample video
 
@@ -170,7 +171,7 @@ What was measured in this first round:
 | 6 images + 6 clips (Agnes) | ~5 min | 1 error 429 (limit of 6/min), recovered on its own |
 | 6 narrations (inemavox) | 2.5 min | checked by local transcription: text matches the script |
 | assembly (ffmpeg) | 18 s | −17.9 LUFS |
-| publish | 84 s | published at https://www.youtube.com/watch?v=nOYaruP0gDs (INEMA TDS channel), pyramids thumb (`thumb_cena: 3`) |
+| publish | 84 s | published at https://www.youtube.com/watch?v=TsVY4UUc5gI (INEMA Agentes channel), pyramids thumb (`thumb_cena: 3`) |
 
 Scene 6 (port of Alexandria) drifted in both Agnes attempts: it turned into a
 baroque port with a dome and caravels. It was left with `estatica` (image with slow zoom).

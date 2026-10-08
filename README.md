@@ -28,7 +28,7 @@ tutorial. Nele, tudo era feito à mão:
 
 Aqui cada etapa é um comando, e o motor de imagem e vídeo pode ser trocado.
 
-Versão: **0.2.0**
+Versão: **0.3.0**
 
 ---
 
@@ -136,7 +136,7 @@ referencias: "nenhuma" # 6. referências
 motor: agnes           # flow | agnes
 voz: nei
 musica: ~/projetos/inemavox/jobs/audio_library/music/<faixa>.mp3
-canal: lives1          # canal do yt-pubx
+canal: lives10         # canal do yt-pubx
 ```
 
 ### O que sai em `~/projetos/output/docflow/<slug>/`
@@ -156,6 +156,7 @@ canal: lives1          # canal do yt-pubx
 - Fade do preto no início e para o preto no fim.
 - Som ambiente dos clipes a 16%.
 - Música a 30%, que abaixa sozinha quando a voz fala (sidechain), com fade in e fade out.
+- No fim, uma cena de CTA: INEMA.CLUB sobre a última imagem desfocada, com a voz chamando para o site (`cta: false` no tema desliga).
 
 ## Vídeo modelo
 
@@ -170,7 +171,7 @@ O que se mediu nesta primeira rodada:
 | 6 imagens + 6 clipes (Agnes) | ~5 min | 1 erro 429 (limite de 6/min), recuperado sozinho |
 | 6 narrações (inemavox) | 2,5 min | conferidas por transcrição local: texto bate com o roteiro |
 | montagem (ffmpeg) | 18 s | −17,9 LUFS |
-| publicar | 84 s | publicado em https://www.youtube.com/watch?v=nOYaruP0gDs (canal INEMA TDS), thumb das pirâmides (`thumb_cena: 3`) |
+| publicar | 84 s | publicado em https://www.youtube.com/watch?v=TsVY4UUc5gI (canal INEMA Agentes), thumb das pirâmides (`thumb_cena: 3`) |
 
 A cena 6 (porto de Alexandria) derivou nas duas tentativas do Agnes: virou um porto
 barroco com cúpula e caravelas. Ficou com `estatica` (imagem com zoom lento).

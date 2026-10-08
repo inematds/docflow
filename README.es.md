@@ -28,7 +28,7 @@ tutorial. En él, todo se hacía a mano:
 
 Aquí cada etapa es un comando, y el motor de imagen y video se puede cambiar.
 
-Versión: **0.2.0**
+Versión: **0.3.0**
 
 ---
 
@@ -136,7 +136,7 @@ referencias: "nenhuma" # 6. referencias
 motor: agnes           # flow | agnes
 voz: nei
 musica: ~/projetos/inemavox/jobs/audio_library/music/<faixa>.mp3
-canal: lives1          # canal de yt-pubx
+canal: lives10         # canal de yt-pubx
 ```
 
 ### Lo que sale en `~/projetos/output/docflow/<slug>/`
@@ -156,6 +156,7 @@ canal: lives1          # canal de yt-pubx
 - Fundido desde negro al inicio y hacia negro al final.
 - Sonido ambiente de los clips al 16%.
 - Música al 30%, que baja sola cuando habla la voz (sidechain), con fade in y fade out.
+- Al final, una escena de CTA: INEMA.CLUB sobre la última imagen desenfocada, con la voz invitando al sitio (`cta: false` en el tema la desactiva).
 
 ## Video modelo
 
@@ -170,7 +171,7 @@ Lo que se midió en esta primera ronda:
 | 6 imágenes + 6 clips (Agnes) | ~5 min | 1 error 429 (límite de 6/min), se recuperó solo |
 | 6 narraciones (inemavox) | 2,5 min | verificadas con transcripción local: el texto coincide con el guion |
 | montaje (ffmpeg) | 18 s | −17,9 LUFS |
-| publicar | 84 s | publicado en https://www.youtube.com/watch?v=nOYaruP0gDs (canal INEMA TDS), thumb de las pirámides (`thumb_cena: 3`) |
+| publicar | 84 s | publicado en https://www.youtube.com/watch?v=TsVY4UUc5gI (canal INEMA Agentes), thumb de las pirámides (`thumb_cena: 3`) |
 
 La escena 6 (puerto de Alejandría) se desvió en los dos intentos de Agnes: se convirtió en un
 puerto barroco con cúpula y carabelas. Se quedó con `estatica` (imagen con zoom lento).

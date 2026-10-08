@@ -23,7 +23,7 @@ import yaml
 
 RAIZ = Path(__file__).resolve().parent
 SAIDA = Path.home() / 'projetos/output/docflow'
-VERSAO = '0.2.0'
+VERSAO = '0.3.0'
 os.environ.setdefault('NODE_PATH', str(Path.home() / '.npm-global/lib/node_modules'))
 
 
@@ -148,11 +148,53 @@ def cmd_narrar(t, d):
 
 
 # ---------------------------------------------------------------- 4. montar
+CTA = 999   # número da cena de encerramento (CTA INEMA.CLUB), depois da última cena
+CTA_FALA = ('Quer aprender a criar vídeos assim com inteligência artificial? '
+            'Acesse inema ponto club. É gratuito.')
+CTA_TEXTO = ('INEMA.CLUB', 'Cursos, guias e projetos de IA. Grátis.')
+FONTE = Path.home() / '.local/share/fonts/Montserrat-ExtraBold.ttf'
+
+
+def cmd_cta(t, d, ultima):
+    """Cena final: a última imagem desfocada e escura, INEMA.CLUB no centro e a voz chamando.
+    Desliga com `cta: false` no tema; `cta_fala` troca a frase."""
+    from montagem import RES
+    W, H = RES.get(t['formato'], RES['16:9'])
+    wav, mp4 = d / f'narracao/{CTA}.wav', d / f'videos/{CTA}.mp4'
+    if not (wav.exists() and wav.stat().st_size > 10000):
+        sys.path.insert(0, str(Path.home() / 'projetos/videos-agnes'))
+        import pipeline as va
+        if not va.narrar(str(wav), t.get('cta_fala', CTA_FALA), voz=t.get('voz', 'nei')):
+            sys.exit('cta: narração falhou (inemavox :8010 no ar?)')
+    if not mp4.exists():
+        marca, linha = CTA_TEXTO
+        (d / 'tmp').mkdir(exist_ok=True)
+        (d / 'tmp/cta-marca.txt').write_text(marca)
+        (d / 'tmp/cta-linha.txt').write_text(linha)
+        fps, seg = 30, 8
+        aparece = "alpha='min(1,max(0,(t-0.6)/0.8))'"
+        sh_vf = (f'scale={W * 2}:-2,zoompan=z=\'min(1+0.0006*on,1.15)\':x=\'iw/2-(iw/zoom/2)\':'
+                 f'y=\'ih/2-(ih/zoom/2)\':d={fps * seg}:s={W}x{H}:fps={fps},'
+                 f'gblur=sigma=18,eq=brightness=-0.28:saturation=0.7,'
+                 f"drawtext=fontfile={FONTE}:textfile={d}/tmp/cta-marca.txt:fontsize={H // 6}:"
+                 f"fontcolor=#f0e805:x=(w-text_w)/2:y=(h/2)-text_h:{aparece},"
+                 f"drawtext=fontfile={FONTE}:textfile={d}/tmp/cta-linha.txt:fontsize={H // 22}:"
+                 f"fontcolor=white:x=(w-text_w)/2:y=(h/2)+{H // 18}:{aparece}")
+        subprocess.run(['ffmpeg', '-nostdin', '-loglevel', 'error', '-loop', '1',
+                        '-i', str(d / f'imagens/{ultima:03d}.png'), '-vf', sh_vf, '-t', str(seg),
+                        '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-y', str(mp4)], check=True)
+    log('  cta: INEMA.CLUB no fim')
+
+
 def cmd_montar(t, d):
     from montagem import montar
     p = plano(d)
     musica = os.path.expanduser(t['musica']) if t.get('musica') else None
-    final = montar(d, [c['n'] for c in p['cenas']], t['formato'], musica, d / 'final.mp4', log)
+    numeros = [c['n'] for c in p['cenas']]
+    if t.get('cta', True):
+        cmd_cta(t, d, numeros[-1])
+        numeros.append(CTA)
+    final = montar(d, numeros, t['formato'], musica, d / 'final.mp4', log)
     log(f'montar: {final}')
 
 
