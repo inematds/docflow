@@ -294,9 +294,7 @@ def creditos_usados(p, t, d):
             x = por_nome.get(q.get('imagem'))
             if not x:
                 continue
-            linha = x.get('credito', '')
-            if x.get('licenca'):
-                linha += f' ({x["licenca"]})'
+            linha = x.get('credito', '')   # licença fica no creditos.json; na descrição, crédito + link
             if x.get('fonte_url') and x['tipo'] == 'imagem':
                 linha += f' {x["fonte_url"]}'
             if linha and linha not in vistos:
