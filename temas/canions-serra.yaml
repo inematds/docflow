@@ -1,0 +1,150 @@
+# Cânions dos Aparados da Serra (RS/SC): promocional de destino com fotos reais (Wikimedia Commons,
+# licença livre), mapas animados e pousadas com cavalgada ou caminhada. Pesquisa de 09/10/2026:
+# ~/projetos/output/docflow/canions-serra/{fatos.md,pousadas.md}. Pousada só entra com a oferta
+# confirmada no site oficial dela; preço não entra (muda).
+slug: canions-serra
+estilo: turismo
+tema: "Os cânions dos Aparados da Serra, na divisa do Rio Grande do Sul com Santa Catarina: paredões de setecentos metros, trilhas, neblina, cavalgadas pelos campos de cima da serra e onde se hospedar"
+duracao_total: 165
+duracao_cena: 11
+formato: "16:9"
+idioma: "português do Brasil"
+referencias: "nenhuma"
+imagens_reais: ~/projetos/output/docflow/canions-serra/fontes
+voz: nei
+musica: ~/projetos/inemavox/jobs/audio_library/music/freesound_716385_Epic_Heroic_Soundtrack_-_Above_The_Sky.mp3
+canal: lives10
+cta_imagem: ~/projetos/output/docflow/canions-serra/fontes/23-morro-da-igreja-mar-de-nuvens.jpg
+cta_fala: "Este vídeo foi feito com inteligência artificial pelo INEMA ponto club. Quer aprender a fazer igual? Acesse inema ponto club. É gratuito."
+
+fatos: |
+  - Itaimbezinho (Parque Nacional de Aparados da Serra, Cambará do Sul/RS e Praia Grande/SC): até setecentos metros de profundidade (Instituto Chico Mendes), cinco vírgula oito quilômetros de extensão e dois de largura; "um dos maiores cânions das Américas". Cascatas Véu de Noiva e Andorinhas caem dos paredões. Fica a dezoito quilômetros do centro de Cambará do Sul.
+  - Fortaleza (Parque Nacional da Serra Geral, Cambará do Sul/RS e Jacinto Machado/SC): sete vírgula cinco quilômetros de extensão; cascata Gravata de Noivo; torre de pedra chamada Dedo de Deus. Fica a vinte e três quilômetros do centro de Cambará.
+  - O Parque Nacional de Aparados da Serra foi criado em 1959; o da Serra Geral, em 1992. Os dois juntos têm cerca de trinta mil hectares.
+  - Região: a maior concentração de cânions do Brasil, com cerca de duzentos e cinquenta quilômetros de escarpas (Serviço Geológico do Brasil). Desníveis de até mil metros a menos de cinquenta quilômetros do mar.
+  - Geoparque Mundial da UNESCO Caminhos dos Cânions do Sul, reconhecido em 2022: sete municípios, três no RS e quatro em SC.
+  - Origem: derrames de lava de mais de cem milhões de anos, quando o antigo continente Gondwana se partiu e nasceu o oceano Atlântico. O Itaimbezinho é considerado um dos melhores registros dessa ruptura (UNESCO).
+  - Neblina: os moradores chamam de "viração" o nevoeiro que se forma rápido e enche o cânion. Não dá para prever; a chance de ver o cânion limpo é maior de manhã cedo.
+  - Frio: Cambará do Sul fica sempre entre os lugares mais frios do Brasil; há geada, e a região é um dos poucos lugares do país com registro de neve.
+  - Trilha do Vértice: cerca de um quilômetro e meio ida e volta, uns quarenta e cinco minutos, até o mirante das cachoeiras. Trilha do Cotovelo: cerca de seis quilômetros ida e volta, umas três horas, entre araucárias e campos. Nas trilhas da borda, guia não é obrigatório.
+  - Trilha do Rio do Boi: por baixo do Itaimbezinho, saindo de Praia Grande; cerca de catorze quilômetros ida e volta, sete a oito horas dentro do leito do rio; condutor credenciado obrigatório e idade mínima de doze anos; fecha em dia de chuva.
+  - Parques abertos das oito às dezessete horas; ingresso comprado antes, pela internet, no site da concessionária Urbia Cânions Verdes; confira os dias de fechamento no site.
+  - Cavalgada: em Praia Grande há passeios a cavalo pelas antigas rotas dos tropeiros (Geoparque). Pousadas com cavalgada, segundo o site de cada uma: Parador Cambará do Sul e Pousada Corucacas (Cambará do Sul/RS); Pousada Aparados da Serra (São José dos Ausentes/RS); Morada dos Canyons (Praia Grande/SC, com operadores parceiros); Rio do Rastro Eco Resort e Hotel Fazenda Rota dos Cânions (Bom Jardim da Serra/SC).
+  - Caminhada e trilhas, segundo o site de cada uma: Recanto dos Canyons e Discovery Canyon (Praia Grande/SC, passeios com agência/operadores parceiros); Aldeia Colibri (Jaquirana/RS, trilhas com cachoeira); Pousada Fazenda Pedra Preta (Urubici/SC, trilhas na mata de araucária).
+  - Mais da serra: a Serra do Rio do Rastro sobe de duzentos a mil e quatrocentos metros de altitude em dezessete quilômetros de curvas; no Morro da Igreja, em Urubici, o vale vira um mar de nuvens e há a Pedra Furada.
+  - Endereços para pesquisar: canionsverdes.com.br (parques e ingressos); canionsdosul.org (geoparque); site do Instituto Chico Mendes em gov.br (parques nacionais); turismo.rs.gov.br; prefeituras de Praia Grande e Urubici. Os links completos estão na descrição.
+
+estrutura: |
+  1. Gancho: paredões de até setecentos metros, no Sul do Brasil, onde a serra despenca em cânions até quase o mar. Nenhum capítulo.
+  2. Onde fica: divisa do RS com SC, Cambará do Sul em cima, Praia Grande embaixo (mapa m-onde).
+  3. capitulo "Os cânions": Itaimbezinho, setecentos metros, cascatas.
+  4. Fortaleza, sete vírgula cinco quilômetros, o Dedo de Deus e a viração (neblina).
+  5. A maior concentração de cânions do Brasil e o geoparque da UNESCO (mapa m-serra).
+  6. Origem: lava de mais de cem milhões de anos, Gondwana se partindo, nasce o Atlântico.
+  7. capitulo "As trilhas": Vértice e Cotovelo, pela borda.
+  8. Rio do Boi: o cânion visto de baixo, com condutor.
+  9. capitulo "A cavalo": cavalgadas pelos campos de cima da serra e rotas dos tropeiros.
+  10. Pousadas com cavalgada (mapa m-pousadas).
+  11. Pousadas com cavalgada: os nomes (quadro l-cavalgada).
+  12. Pousadas com caminhada e trilhas (quadro l-caminhada).
+  13. capitulo "Mais da serra": Serra do Rio do Rastro, Morro da Igreja, frio, geada e neve.
+  14. Dicas: vá cedo por causa da neblina, compre o ingresso antes, leve agasalho.
+  15. capitulo "Para pesquisar": os endereços (quadro l-enderecos), diz que os links estão na descrição.
+
+fontes: "Instituto Chico Mendes (páginas dos Parques Nacionais de Aparados da Serra e da Serra Geral e das trilhas); Urbia Cânions Verdes (site e folheto); Geoparque Caminhos dos Cânions do Sul (canionsdosul.org) e UNESCO; Serviço Geológico do Brasil (proposta do geoparque, 2011); sites oficiais das pousadas citadas, conferidos em 09/10/2026. Preços e horários mudam: confirme direto com cada lugar."
+
+links:
+  - "Parques e ingressos (Urbia Cânions Verdes): https://www.canionsverdes.com.br/ · https://canionsverdes.urbiapass.com.br/"
+  - "Parque Nacional de Aparados da Serra (ICMBio): https://www.gov.br/icmbio/pt-br/assuntos/biodiversidade/unidade-de-conservacao/unidades-de-biomas/mata-atlantica/lista-de-ucs/parna-de-aparados-da-serra"
+  - "Parque Nacional da Serra Geral (ICMBio): https://www.gov.br/icmbio/pt-br/assuntos/biodiversidade/unidade-de-conservacao/unidades-de-biomas/mata-atlantica/lista-de-ucs/parna-da-serra-geral"
+  - "Trilha do Rio do Boi, regras (ICMBio): https://www.gov.br/icmbio/pt-br/assuntos/unidade-de-conservacao/unidades-de-biomas/mata-atlantica/lista-de-ucs/parna-de-aparados-da-serra/atrativos/trilha-do-rio-do-boi"
+  - "Geoparque Mundial da UNESCO Caminhos dos Cânions do Sul: https://canionsdosul.org/"
+  - "Turismo do Rio Grande do Sul: https://www.turismo.rs.gov.br/turismo/"
+  - "Prefeitura de Praia Grande/SC: https://praiagrande.atende.net · Urubici/SC: https://www.urubici.sc.gov.br · São José dos Ausentes/RS: https://www.saojosedosausentes.rs.gov.br · Bom Jardim da Serra/SC: https://bomjardimdaserra.sc.gov.br/"
+  - "Pousadas com cavalgada (segundo o site de cada uma): Parador Cambará do Sul https://www.paradorcambaradosul.com.br/ · Pousada Corucacas https://www.corucacas.com.br · Pousada Aparados da Serra https://pousadaaparadosdaserra.com.br/ · Morada dos Canyons https://www.moradadoscanyons.com/ · Rio do Rastro Eco Resort https://riodorastro.com.br/ · Hotel Fazenda Rota dos Cânions https://www.hotelfazendarotadoscanions.com.br"
+  - "Pousadas com trilhas e caminhadas: Recanto dos Canyons https://www.recantodoscanyons.com.br · Discovery Canyon https://www.discoverycanyon.com.br · Aldeia Colibri https://www.aldeiacolibri.com.br · Pousada Fazenda Pedra Preta https://pousadapedrapreta.com.br/"
+  - "Preços, horários e dias de fechamento mudam: confirme direto com cada lugar antes de ir. Nenhuma pousada pagou para aparecer."
+
+graficos:
+  - arquivo: m-onde
+    tipo: mapa
+    titulo: "Onde ficam os cânions"
+    subtitulo: "Divisa do Rio Grande do Sul com Santa Catarina"
+    fonte: "Infomase/NordNordWest (Wikimedia Commons, CC BY-SA)"
+    credito_mapa: "Mapa: Infomase/NordNordWest · CC BY-SA (Wikimedia Commons)"
+    base: ~/projetos/output/docflow/canions-serra/fontes/mapa-01-relevo-brasil.jpg
+    bounds: [-74.5, -34.0, -32.0, 6.0]
+    vista: [-52.5, -17.0, 34]
+    vista_fim: [-50.4, -29.0, 4.6]
+    pontos:
+      - {nome: "Porto Alegre", lon: -51.23, lat: -30.03, lado: e}
+      - {nome: "Florianópolis", lon: -48.55, lat: -27.6, lado: e}
+      - {nome: "Cambará do Sul", lon: -50.145, lat: -29.048, sub: "em cima da serra", lado: e}
+      - {nome: "Praia Grande", lon: -49.952, lat: -29.197, sub: "embaixo dos cânions"}
+    rota: [[-51.23, -30.03], [-50.79, -29.65], [-50.58, -29.45], [-50.145, -29.048]]
+  - arquivo: m-serra
+    tipo: mapa
+    titulo: "Os cânions do Sul"
+    subtitulo: "Cerca de 250 km de escarpas (Serviço Geológico do Brasil)"
+    fonte: "Infomase/NordNordWest (Wikimedia Commons, CC BY-SA)"
+    credito_mapa: "Mapa: Infomase/NordNordWest · CC BY-SA · posições aproximadas"
+    base: ~/projetos/output/docflow/canions-serra/fontes/mapa-01-relevo-brasil.jpg
+    bounds: [-74.5, -34.0, -32.0, 6.0]
+    vista: [-49.7, -28.45, 4.2]
+    vista_fim: [-49.8, -28.45, 3.3]
+    pontos:
+      - {nome: "Itaimbezinho", lon: -50.083, lat: -29.167, sub: "até 700 m de profundidade", lado: e}
+      - {nome: "Fortaleza", lon: -49.95, lat: -29.05, sub: "7,5 km de extensão"}
+      - {nome: "Serra do Rio do Rastro", lon: -49.55, lat: -28.39}
+      - {nome: "Urubici", lon: -49.592, lat: -28.015, sub: "Morro da Igreja"}
+  - arquivo: m-pousadas
+    tipo: mapa
+    titulo: "Pousadas com cavalgada"
+    subtitulo: "Segundo o site de cada uma (conferido em 09/10/2026)"
+    fonte: "Infomase/NordNordWest (Wikimedia Commons, CC BY-SA)"
+    credito_mapa: "Mapa: Infomase/NordNordWest · CC BY-SA · cidades"
+    base: ~/projetos/output/docflow/canions-serra/fontes/mapa-01-relevo-brasil.jpg
+    bounds: [-74.5, -34.0, -32.0, 6.0]
+    vista: [-49.95, -28.65, 3.3]
+    pontos:
+      - {nome: "Cambará do Sul", lon: -50.145, lat: -29.048, sub: "Parador · Corucacas", lado: e}
+      - {nome: "São José dos Ausentes", lon: -50.065, lat: -28.747, sub: "Pousada Aparados da Serra", lado: e}
+      - {nome: "Praia Grande", lon: -49.952, lat: -29.197, sub: "Morada dos Canyons"}
+      - {nome: "Bom Jardim da Serra", lon: -49.627, lat: -28.337, sub: "Rio do Rastro · Rota dos Cânions"}
+  - arquivo: l-cavalgada
+    tipo: lista
+    titulo: "A cavalo"
+    fonte: "sites oficiais das pousadas (09/10/2026)"
+    fundo: ~/projetos/output/docflow/canions-serra/fontes/18-cavalgada-campos-de-cima-da-serra.jpg
+    rodape: "Segundo o site de cada pousada · links na descrição"
+    linhas:
+      - {t: "Parador Cambará do Sul", s: "Cambará do Sul · RS"}
+      - {t: "Pousada Corucacas", s: "Cambará do Sul · RS"}
+      - {t: "Pousada Aparados da Serra", s: "São José dos Ausentes · RS"}
+      - {t: "Morada dos Canyons", s: "Praia Grande · SC"}
+      - {t: "Rio do Rastro Eco Resort", s: "Bom Jardim da Serra · SC"}
+      - {t: "Hotel Fazenda Rota dos Cânions", s: "Bom Jardim da Serra · SC"}
+  - arquivo: l-caminhada
+    tipo: lista
+    titulo: "Trilhas e caminhadas"
+    fonte: "sites oficiais das pousadas (09/10/2026)"
+    fundo: ~/projetos/output/docflow/canions-serra/fontes/05-itaimbezinho-araucarias-trilha-borda.jpg
+    rodape: "Segundo o site de cada pousada · links na descrição"
+    linhas:
+      - {t: "Recanto dos Canyons", s: "Praia Grande · SC"}
+      - {t: "Discovery Canyon", s: "Praia Grande · SC"}
+      - {t: "Aldeia Colibri", s: "Jaquirana · RS"}
+      - {t: "Pousada Fazenda Pedra Preta", s: "Urubici · SC"}
+  - arquivo: l-enderecos
+    tipo: lista
+    titulo: "Para pesquisar"
+    fonte: "endereços oficiais conferidos em 09/10/2026"
+    fundo: ~/projetos/output/docflow/canions-serra/fontes/11-fortaleza-horizonte.jpg
+    rodape: "Links completos na descrição do vídeo"
+    linhas:
+      - {t: "canionsverdes.com.br", s: "parques, trilhas e ingressos"}
+      - {t: "canionsdosul.org", s: "Geoparque Mundial da UNESCO"}
+      - {t: "gov.br/icmbio", s: "Parques Nacionais e Trilha do Rio do Boi"}
+      - {t: "turismo.rs.gov.br", s: "Turismo do Rio Grande do Sul"}
+      - {t: "praiagrande.atende.net", s: "Prefeitura de Praia Grande · SC"}
+      - {t: "urubici.sc.gov.br", s: "Prefeitura de Urubici · SC"}

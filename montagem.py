@@ -33,7 +33,7 @@ def sh(cmd):
         raise RuntimeError('ffmpeg: ' + r.stderr[-600:])
 
 
-def montar(d, numeros, formato, musica, saida, log, x=X):
+def montar(d, numeros, formato, musica, saida, log, x=X, fade_in=1.2):
     X = x   # transição: 0,7 s (calmo) ou 0,35 s (dinâmico)
     W, H = RES.get(formato, RES['16:9'])
     T = d / 'tmp'
@@ -86,7 +86,8 @@ def montar(d, numeros, formato, musica, saida, log, x=X):
         off = inicio[i]
         fc.append(f'{ult}[{i}:v]xfade=transition=fade:duration={X}:offset={off:.3f}[vx{i}]')
         ult = f'[vx{i}]'
-    fc.append(f'{ult}fade=t=in:st=0:d=1.2,fade=t=out:st={total - 1.6:.3f}:d=1.6[vout]')
+    entrada = f'fade=t=in:st=0:d={fade_in},' if fade_in else ''   # com gancho, o frame 0 já é a arte cheia
+    fc.append(f'{ult}{entrada}fade=t=out:st={total - 1.6:.3f}:d=1.6[vout]')
 
     for i in range(n):   # ambiente de cada cena, no lugar dela
         fc.append(f'[{i}:a]volume={AMBIENTE},adelay={int(inicio[i] * 1000)}:all=1[amb{i}]')

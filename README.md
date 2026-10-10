@@ -28,7 +28,7 @@ tutorial. Nele, tudo era feito à mão:
 
 Aqui cada etapa é um comando, e o motor de imagem e vídeo pode ser trocado.
 
-Versão: **0.7.0**
+Versão: **0.8.0**
 
 ---
 
@@ -132,6 +132,7 @@ Para refazer um clipe de IA, apague `videos/NNN.mp4` e rode `gerar`: só ele é 
 | `documentario` | cenas geradas por IA (imagem → vídeo), narração calma | [Egito](https://www.youtube.com/watch?v=TsVY4UUc5gI) |
 | `reais` | mapas, satélite e fotos reais, gráficos animados, números na tela | [El Niño em números](https://www.youtube.com/watch?v=IE_D18omUjE) |
 | `alerta-vertical` | Short 9:16: ALERTA no topo, imagem em cima, mapa ao vivo embaixo, legenda palavra a palavra (protótipo à mão) | [El Niño ALERTA](https://www.youtube.com/watch?v=6OzZWiQHHdw) |
+| `turismo` | promocional de destino: frame 0 de impacto, fotos reais com licença, mapas animados (pontos e rota), capítulos com o nome grande e os endereços para pesquisar no fim | cânions dos Aparados da Serra |
 | `historia` | explicativo no estilo dos canais de divulgação: abertura viral (frame 0 = arte de impacto com a frase, que é também a thumb, e cortes de 1,5–2,4 s nos primeiros ~20 s), promessa, analogia, **prova na tela** (print de página oficial com o trecho grifado), grafismos animados, mapas ao vivo do earth.nullschool e cenas de cinema do Agnes; corte a cada 4–5 s | piloto El Niño (3 min) |
 | `historia-apresentador` | o mesmo, com o avatar do Nei (HeyGen, pago) em alguns blocos | piloto El Niño |
 

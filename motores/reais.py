@@ -55,9 +55,17 @@ def catalogo(t, d, sem_ia=False):
                 x['credito'] = 'Ilustração IA (Agnes) · inspirada em ' + x['credito'].replace('Foto: ', 'foto de ')
                 x['ia'] = True
     for g in t.get('graficos', []):
+        tipo = g.get('tipo', 'linha')
+        if tipo == 'mapa':
+            desc = (f'MAPA ANIMADO: {g["titulo"]} — pontos que aparecem: '
+                    + ', '.join(x['nome'] for x in g['pontos']) + (' (com rota desenhada)' if g.get('rota') else ''))
+        elif tipo == 'lista':
+            desc = f'QUADRO DE TEXTO: {g["titulo"]} — linhas: ' + ' | '.join(_linha(x)[0] for x in g['linhas'])
+        else:
+            desc = (f'GRÁFICO: {g["titulo"]} ({g.get("unidade", "")}) — '
+                    + ', '.join(f'{r}: {v}' for r, v in zip(g['rotulos'], g['valores'])))
         itens.append({'arquivo': g['arquivo'], 'tipo': 'grafico', 'grafico': g,
-                      'descricao': f'GRÁFICO: {g["titulo"]} ({g.get("unidade", "")}) — '
-                                   + ', '.join(f'{r}: {v}' for r, v in zip(g['rotulos'], g['valores'])),
+                      'descricao': desc,
                       'credito': f'Dados: {g["fonte"]}'})
     return itens
 
@@ -69,7 +77,12 @@ def texto_catalogo(itens):
 
 # ---------------------------------------------------------------- gráfico animado
 def grafico(g, saida, segundos, W, H):
-    """Linha ou barras que vão aparecendo em 70% do tempo e param com o último valor marcado."""
+    """Linha ou barras que vão aparecendo em 70% do tempo e param com o último valor marcado.
+    `tipo: mapa` e `tipo: lista` têm animação própria (mapa() e lista())."""
+    if g.get('tipo') == 'mapa':
+        return mapa(g, saida, segundos, W, H)
+    if g.get('tipo') == 'lista':
+        return lista(g, saida, segundos, W, H)
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
@@ -147,10 +160,170 @@ def grafico(g, saida, segundos, W, H):
     plt.close(fig)
 
 
+def _plt():
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    from matplotlib import font_manager
+    import logging
+    logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)
+    try:
+        font_manager.fontManager.addfont(str(FONTE))
+        plt.rcParams['font.family'] = font_manager.FontProperties(fname=str(FONTE)).get_name()
+    except Exception:
+        pass
+    return plt
+
+
+def _suave(k):
+    k = min(1.0, max(0.0, k))
+    return k * k * (3 - 2 * k)
+
+
+def _linha(x):
+    """Linha de quadro: "texto" ou {"t": "texto", "s": "subtexto"}."""
+    return (x, '') if isinstance(x, str) else (x['t'], x.get('s', ''))
+
+
+def _contorno(lw=4):
+    from matplotlib import patheffects as pe
+    return [pe.withStroke(linewidth=lw, foreground='black')]
+
+
+def mapa(g, saida, segundos, W, H):
+    """Mapa real (imagem estática com limites conhecidos) com câmera que aproxima, rota que se
+    desenha e pontos que acendem um a um com o nome. Tema:
+      base: caminho da imagem · bounds: [oeste, sul, leste, norte] (graus da imagem)
+      vista: [lon, lat, largura_em_graus] no início · vista_fim: idem no fim (opcional)
+      pontos: [{nome, lon, lat, sub?, cor?, lado?: 'e'|'d'}] · rota: [[lon, lat], ...] (opcional)"""
+    import numpy as np
+    from PIL import Image
+    from matplotlib.animation import FFMpegWriter
+    plt = _plt()
+    Image.MAX_IMAGE_PIXELS = None
+    img = Image.open(Path(g['base']).expanduser()).convert('RGB')
+    if img.width > 3200:
+        img = img.resize((3200, int(img.height * 3200 / img.width)), Image.LANCZOS)
+    w0, s0, e0, n0 = g['bounds']
+    px_lon, px_lat = img.width / (e0 - w0), img.height / (n0 - s0)
+    v0 = g.get('vista') or [(w0 + e0) / 2, (s0 + n0) / 2, (e0 - w0)]
+    v1 = g.get('vista_fim') or v0
+    fig = plt.figure(figsize=(W / 100, H / 100), dpi=100)
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.axis('off')
+    ax.imshow(np.asarray(img), extent=[w0, e0, s0, n0], aspect='auto', interpolation='bilinear')
+    escuro = ax.imshow([[0]], extent=[w0, e0, s0, n0], aspect='auto', cmap='gray', alpha=0.18, vmin=0, vmax=1)
+    escuro.set_zorder(1)
+    cor = '#f0e805'
+    rota = g.get('rota') or []
+    lr, = ax.plot([], [], color=cor, lw=4, zorder=3, solid_capstyle='round')
+    lr.set_path_effects(_contorno(8))
+    pts = []
+    for p in g['pontos']:
+        anel = ax.scatter([p['lon']], [p['lat']], s=0, facecolors='none', edgecolors=p.get('cor', cor), lw=3, zorder=4)
+        ponto = ax.scatter([p['lon']], [p['lat']], s=0, color=p.get('cor', cor), edgecolors='black', lw=2, zorder=5)
+        dx = -1 if p.get('lado') == 'e' else 1
+        nome = ax.annotate(p['nome'], (p['lon'], p['lat']), xytext=(dx * 18, 6), textcoords='offset points',
+                           ha='right' if dx < 0 else 'left', va='bottom', color='white', fontsize=H / 30,
+                           zorder=6, alpha=0)
+        nome.set_path_effects(_contorno(5))
+        sub = ax.annotate(p.get('sub', ''), (p['lon'], p['lat']), xytext=(dx * 18, -6), textcoords='offset points',
+                          ha='right' if dx < 0 else 'left', va='top', color=cor, fontsize=H / 46, zorder=6, alpha=0)
+        sub.set_path_effects(_contorno(4))
+        pts.append((anel, ponto, nome, sub))
+    fig.text(0.04, 0.9, g['titulo'].upper(), color='black', fontsize=H / 30,
+             bbox=dict(facecolor='#E2A23B', edgecolor='none', pad=8))
+    if g.get('subtitulo'):
+        fig.text(0.04, 0.84, g['subtitulo'], color='white', fontsize=H / 44).set_path_effects(_contorno(4))
+    fig.text(0.975, 0.03, g.get('credito_mapa', f'Mapa: {g["fonte"]}'), color='white', alpha=0.85,
+             fontsize=H / 56, ha='right').set_path_effects(_contorno(3))
+    n_frames = int(segundos * FPS)
+    w = FFMpegWriter(fps=FPS, codec='libx264', extra_args=['-pix_fmt', 'yuv420p', '-crf', '18'])
+    np_ = len(pts)
+    de = g.get('pontos_de', 0.45 if g.get('vista_fim') else 0.12)   # com zoom, os pontos esperam a câmera chegar
+    with w.saving(fig, str(saida), dpi=100):
+        for f in range(n_frames):
+            k = f / max(1, n_frames - 1)
+            m = _suave(k)
+            lon = v0[0] + (v1[0] - v0[0]) * m
+            lat = v0[1] + (v1[1] - v0[1]) * m
+            larg = v0[2] + (v1[2] - v0[2]) * m
+            alt = larg * px_lon * H / (W * px_lat)   # sem distorcer a imagem
+            ax.set_xlim(lon - larg / 2, lon + larg / 2)
+            ax.set_ylim(lat - alt / 2, lat + alt / 2)
+            if len(rota) > 1:   # rota se desenha entre 10% e 60% do tempo
+                q = _suave((k - 0.1) / 0.5) * (len(rota) - 1)
+                i = int(q)
+                xs = [r[0] for r in rota[:i + 1]]
+                ys = [r[1] for r in rota[:i + 1]]
+                if i + 1 < len(rota):
+                    fr = q - i
+                    xs.append(rota[i][0] + (rota[i + 1][0] - rota[i][0]) * fr)
+                    ys.append(rota[i][1] + (rota[i + 1][1] - rota[i][1]) * fr)
+                lr.set_data(xs, ys)
+            for j, (anel, ponto, nome, sub) in enumerate(pts):   # acendem um a um até 80% do tempo
+                t0 = de + (0.8 - de) * j / max(1, np_)
+                a = _suave((k - t0) / 0.06)
+                ponto.set_sizes([(H / 7) * a + (H / 25) * a * (1 - a) * 4])
+                pul = ((k - t0) * segundos * 1.1) % 1 if k > t0 else 0
+                anel.set_sizes([(H / 7) * (1 + 5 * pul)])
+                anel.set_alpha(a * (1 - pul))
+                nome.set_alpha(a); sub.set_alpha(a)
+            w.grab_frame()
+    plt.close(fig)
+
+
+def lista(g, saida, segundos, W, H):
+    """Quadro de texto sobre foto escura: título e linhas que entram uma a uma (deslizando).
+    Tema: titulo, linhas: ["texto" | {t, s}], fundo: caminho da foto (opcional), rodape (opcional)."""
+    import numpy as np
+    from PIL import Image, ImageFilter, ImageEnhance
+    from matplotlib.animation import FFMpegWriter
+    plt = _plt()
+    fig = plt.figure(figsize=(W / 100, H / 100), dpi=100)
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.axis('off'); ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+    if g.get('fundo'):
+        im = Image.open(Path(g['fundo']).expanduser()).convert('RGB')
+        r = max(W / im.width, H / im.height)
+        im = im.resize((int(im.width * r) + 1, int(im.height * r) + 1), Image.LANCZOS)
+        im = im.crop(((im.width - W) // 2, (im.height - H) // 2, (im.width - W) // 2 + W, (im.height - H) // 2 + H))
+        im = ImageEnhance.Brightness(im.filter(ImageFilter.GaussianBlur(14))).enhance(0.33)
+        ax.imshow(np.asarray(im), extent=[0, 1, 0, 1], aspect='auto')
+    else:
+        fig.patch.set_facecolor('#0d1117')
+    cor = '#f0e805'
+    ax.text(0.06, 0.86, g['titulo'].upper(), color='black', fontsize=H / 22, va='center',
+            bbox=dict(facecolor='#E2A23B', edgecolor='none', pad=10))
+    linhas = [_linha(x) for x in g['linhas']]
+    passo = min(0.115, 0.66 / max(1, len(linhas)))
+    objs = []
+    for i, (t_, s_) in enumerate(linhas):
+        y = 0.72 - i * passo
+        a = ax.text(0.06, y, t_, color='white', fontsize=H / 30, va='center', alpha=0)
+        b = ax.text(0.06, y - passo * 0.38, s_, color=cor, fontsize=H / 48, va='center', alpha=0)
+        a.set_path_effects(_contorno(4)); b.set_path_effects(_contorno(3))
+        objs.append((a, b))
+    if g.get('rodape'):
+        ax.text(0.06, 0.05, g['rodape'], color='white', alpha=0.8, fontsize=H / 50)
+    n_frames = int(segundos * FPS)
+    entra = min(1.6, segundos * 0.7 / max(1, len(linhas)))   # cada linha entra na sua vez
+    w = FFMpegWriter(fps=FPS, codec='libx264', extra_args=['-pix_fmt', 'yuv420p', '-crf', '18'])
+    with w.saving(fig, str(saida), dpi=100):
+        for f in range(n_frames):
+            t = f / FPS
+            for i, (a, b) in enumerate(objs):
+                k = _suave((t - 0.4 - i * entra) / 0.45)
+                a.set_alpha(k); b.set_alpha(k)
+                a.set_x(0.06 - 0.03 * (1 - k)); b.set_x(0.06 - 0.03 * (1 - k))
+            w.grab_frame()
+    plt.close(fig)
+
+
 def previa_grafico(g, saida, W, H):
     """PNG do gráfico completo (thumb e CTA usam imagens/NNN.png)."""
     tmp = Path(saida).with_suffix('.mp4')
-    grafico(g, tmp, 1.0, W, H)
+    grafico(g, tmp, 4.0 if g.get('tipo') == 'lista' else 1.0, W, H)
     sh(['ffmpeg', '-loglevel', 'error', '-sseof', '-0.1', '-i', str(tmp), '-frames:v', '1',
         '-y', str(saida)])
     tmp.unlink()
@@ -215,14 +388,52 @@ def textos(credito, destaque, rotulo, W, H, tmp, saida, fade=True):
     return vf
 
 
+def capitulo(img, saida, segundos, titulo, kicker, W, H, tmp):
+    """Cartão de troca de assunto: a foto do capítulo desfocada e escura, entrando do preto,
+    o nome do assunto grande subindo devagar e um filete âmbar."""
+    n = int(segundos * FPS)
+    t_ = Path(tmp) / f'{Path(saida).stem}-tit.txt'
+    t_.write_text(pad(titulo.upper()))
+    k_ = Path(tmp) / f'{Path(saida).stem}-kick.txt'
+    k_.write_text(pad(kicker.upper()))
+    sobe = f"(h-text_h)/2+{H // 40}*(1-min(1,t/0.6))"
+    entra = "alpha='min(1,max(0,(t-0.15)/0.45))'"
+    vf = (f"[0:v]scale={W * 2}:{H * 2}:force_original_aspect_ratio=increase,crop={W * 2}:{H * 2},"
+          f"zoompan=z='1.05+0.04*on/{n}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d={n}:s={W}x{H}:fps={FPS},"
+          f"gblur=sigma=16,eq=brightness=-0.32:saturation=0.75,fade=t=in:st=0:d=0.35,"
+          f"drawtext=expansion=none:fontfile={FONTE}:textfile={t_}:fontsize={H // 8}:fontcolor=white:"
+          f"shadowcolor=black@0.7:shadowx=3:shadowy=3:x=(w-text_w)/2:y='{sobe}':{entra},"
+          f"drawbox=x=(iw-{W // 6})/2:y=ih/2+{H // 11}:w={W // 6}:h={max(4, H // 120)}:color=0xE2A23B:t=fill:"
+          f"enable='gte(t,0.35)'")
+    if kicker:
+        vf += (f",drawtext=expansion=none:fontfile={FONTE}:textfile={k_}:fontsize={H // 28}:fontcolor=0xF0E805:"
+               f"x=(w-text_w)/2:y=h/2-{H // 6}:{entra}")
+    sh(['ffmpeg', '-loglevel', 'error', '-loop', '1', '-i', str(img), '-filter_complex', vf + '[v]',
+        '-map', '[v]', '-t', f'{segundos:.3f}', '-r', str(FPS), '-c:v', 'libx264', '-crf', '18',
+        '-pix_fmt', 'yuv420p', '-y', str(saida)])
+
+
 # ---------------------------------------------------------------- cena
 def cena(c, itens, segundos, ritmo, W, H, tmp, saida, log):
     """Junta os planos da cena com cortes secos (dinâmico) ou fundidos (calmo), no tempo exato."""
     por_nome = {x['arquivo']: x for x in itens}
     planos = [p for p in c.get('planos', []) if p.get('imagem') in por_nome] or \
              [{'imagem': itens[(c['n'] - 1) % len(itens)]['arquivo']}]
+    partes, total = [], segundos
+    if c.get('_gancho'):   # frame 0: a arte do gancho, parada com zoom lento, sem texto por cima
+        out = Path(tmp) / f'gancho-{c["n"]:03d}.mp4'
+        g_seg = min(2.6, segundos * 0.35)
+        plano(c['_gancho'], out, g_seg, 'zoom-in', None, None, None, W, H, tmp, fade=False)
+        partes.append(out); segundos -= g_seg
+    if c.get('capitulo'):  # troca de assunto: tela escura e o nome grande antes das imagens
+        foto = next((por_nome[q['imagem']]['caminho'] for q in planos
+                     if por_nome[q['imagem']]['tipo'] == 'imagem'), None) or \
+               next(x['caminho'] for x in itens if x['tipo'] == 'imagem')
+        out = Path(tmp) / f'capitulo-{c["n"]:03d}.mp4'
+        cap_seg = min(1.9, segundos * 0.3)
+        capitulo(foto, out, cap_seg, c['capitulo'], c.get('capitulo_kicker', ''), W, H, tmp)
+        partes.append(out); segundos -= cap_seg
     cada = segundos / len(planos)
-    partes = []
     if ritmo == 'dinamico':   # foto longa vira 2 cortes (abre e fecha), troca a cada 2–3 s
         novos = []
         for p in planos:
@@ -253,13 +464,13 @@ def cena(c, itens, segundos, ritmo, W, H, tmp, saida, log):
             plano(x['caminho'], out, cada, mov, x.get('credito'), p.get('destaque'), rot, W, H, tmp,
                   fade=not seg2, zoom0=1.18 if seg2 else 1.0)
         partes.append(out)
-    lista = Path(tmp) / f'cena-{c["n"]:03d}-lista.txt'
-    lista.write_text(''.join(f"file '{p}'\n" for p in partes))
-    sh(['ffmpeg', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', str(lista),
+    arq_lista = Path(tmp) / f'cena-{c["n"]:03d}-lista.txt'
+    arq_lista.write_text(''.join(f"file '{p}'\n" for p in partes))
+    sh(['ffmpeg', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', str(arq_lista),
         '-f', 'lavfi', '-i', 'anullsrc=r=48000:cl=stereo', '-map', '0:v', '-map', '1:a',
-        '-t', f'{segundos:.3f}', '-c:v', 'libx264', '-crf', '18', '-pix_fmt', 'yuv420p',
+        '-t', f'{total:.3f}', '-c:v', 'libx264', '-crf', '18', '-pix_fmt', 'yuv420p',
         '-c:a', 'aac', '-y', str(saida)])
-    log(f'  cena {c["n"]:03d}: {len(planos)} planos · {segundos:.1f}s')
+    log(f'  cena {c["n"]:03d}: {len(planos)} planos · {total:.1f}s')
 
 
 # ---------------------------------------------------------------- entrada do docflow
@@ -275,6 +486,11 @@ def gerar(p, t, d, log, x_transicao, folga):
     tmp.mkdir(parents=True, exist_ok=True)
     por_nome = {x['arquivo']: x for x in itens}
     ultima = p['cenas'][-1]['n']
+    if p.get('gancho') and not p.get('sem_gancho'):   # frame 0 de impacto (Codex) + thumb.jpg
+        from motores import historia
+        gk = historia.gerar_gancho(p, d, log)
+        if gk:
+            p['cenas'][0]['_gancho'] = str(gk)
     for c in p['cenas']:
         n = c['n']
         wav, dest = d / f'narracao/{n:03d}.wav', d / f'videos/{n:03d}.mp4'

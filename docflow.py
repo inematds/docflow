@@ -23,7 +23,7 @@ import yaml
 
 RAIZ = Path(__file__).resolve().parent
 SAIDA = Path.home() / 'projetos/output/docflow'
-VERSAO = '0.7.0'
+VERSAO = '0.8.0'
 os.environ.setdefault('NODE_PATH', str(Path.home() / '.npm-global/lib/node_modules'))
 
 
@@ -38,6 +38,12 @@ ESTILOS = {
         'resumo': 'Assunto atual com mapas, satélite e fotos reais, gráficos animados e números na tela.',
         'exemplo': 'https://www.youtube.com/watch?v=IE_D18omUjE (El Niño em números)',
         'tema': {'motor': 'reais', 'ritmo': 'dinamico', 'formato': '16:9'}},
+    'turismo': {
+        'resumo': 'Promocional de destino: abertura de impacto, fotos reais com licença, mapas animados '
+                  '(pontos e rota), capítulos com o nome grande e, no fim, os endereços para pesquisar.',
+        'exemplo': 'cânions dos Aparados da Serra (RS/SC)',
+        'tema': {'motor': 'reais', 'ritmo': 'dinamico', 'formato': '16:9',
+                 'tom': 'promocional de viagem: encantado, sensorial, convidativo, sem exagero nem superlativo falso'}},
     'alerta-vertical': {
         'resumo': 'Short 9:16 em tom de alerta: ALERTA no topo, imagem em cima, mapa ao vivo embaixo, '
                   'legenda palavra a palavra. (Protótipo montado à mão; ainda não é motor.)',
@@ -73,6 +79,7 @@ def carregar_tema(caminho):
     t.setdefault('fatos', 'nenhum fato fornecido: use só conhecimento consolidado')
     t.setdefault('estrutura', 'livre, em ordem cronológica')
     t.setdefault('ritmo', 'calmo')   # calmo | dinamico (cortes a cada 2–3 s)
+    t.setdefault('tom', 'ritmo de notícia')
     d = SAIDA / t['slug']
     for sub in ('imagens', 'videos', 'narracao', 'tmp'):
         (d / sub).mkdir(parents=True, exist_ok=True)
@@ -246,7 +253,8 @@ def cmd_cta(t, d, ultima):
                  f"drawtext=expansion=none:fontfile={FONTE}:textfile={d}/tmp/cta-linha.txt:fontsize={H // 22}:"
                  f"fontcolor=white:x=(w-text_w)/2:y=(h/2)+{H // 18}:{aparece}")
         subprocess.run(['ffmpeg', '-nostdin', '-loglevel', 'error', '-loop', '1',
-                        '-i', str(d / f'imagens/{ultima:03d}.png'), '-vf', sh_vf, '-t', str(seg),
+                        '-i', os.path.expanduser(t.get('cta_imagem') or str(d / f'imagens/{ultima:03d}.png')),
+                        '-vf', sh_vf, '-t', str(seg),
                         '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-y', str(mp4)], check=True)
     log('  cta: INEMA.CLUB no fim')
 
@@ -268,7 +276,8 @@ def cmd_montar(t, d):
     if t.get('cta', True):
         cmd_cta(t, d, numeros[-1])
         numeros.append(CTA)
-    final = montar(d, numeros, t['formato'], musica, d / 'final.mp4', log, x=transicao(t))
+    final = montar(d, numeros, t['formato'], musica, d / 'final.mp4', log, x=transicao(t),
+                   fade_in=0 if (d / 'gancho.png').exists() and p.get('gancho') else 1.2)
     log(f'montar: {final}')
 
 
@@ -299,6 +308,7 @@ def descricao(p, t):
     m = re.match(r'freesound_(\d+)_(.*)', musica)
     credito = f'"{m.group(2).replace("_", " ")}" (Freesound #{m.group(1)})' if m else musica
     linhas = [p['youtube']['descricao'].strip(), '',
+              *(['🔎 Para pesquisar', *('• ' + x for x in t['links']), ''] if t.get('links') else []),
               *([f'📌 Fontes: {t["fontes"].strip()}', ''] if t.get('fontes') else []),
               '🛠️ Como este vídeo foi feito',
               'Produzido de ponta a ponta pelo docflow, projeto aberto do INEMA que transforma '

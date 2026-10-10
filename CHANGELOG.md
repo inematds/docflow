@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.0 — 2026-10-09
+- Estilo `turismo` (promocional de destino, motor `reais`): abertura de impacto, capítulos, mapas animados e endereços no fim. Tema exemplo `canions-serra` (cânions dos Aparados da Serra, RS/SC).
+- Motor `reais`: gancho no frame 0 (`gancho` no plano → arte do Codex com a frase, que vira a `thumb.jpg`; sem fade do preto na abertura); `capitulo` por cena (tela escura com o nome do assunto grande, ~2 s); `tipo: mapa` nos gráficos (imagem estática com `bounds`, câmera que aproxima, rota desenhada, pontos que acendem com nome); `tipo: lista` (linhas que entram uma a uma sobre foto escura).
+- Tema aceita `tom`, `links` (bloco "Para pesquisar" na descrição) e `cta_imagem`.
+
 ## 0.7.0 — 2026-10-08
 - Gancho viral no estilo `historia`: frame 0 = arte de impacto do Codex com a frase já desenhada (`gancho` no plano → `gancho.png`, que vira também a `thumb.jpg` do YouTube), zoom preso no canto da frase, e 7–10 cortes de 1,5–2,4 s na cena 1, com números entrando rápido (`anim` no contador e no termômetro).
 - `montar` recusa plano sem gancho (cena 1 sem `imagem` no frame 0, sem `segundos` ou com corte acima de 2,5 s); `"sem_gancho": true` libera. Durações da cena 1 se ajustam à narração.
