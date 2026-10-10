@@ -390,6 +390,9 @@ def main():
     ap.add_argument('--enviar', action='store_true', help='publicar de verdade (sem dry-run)')
     ap.add_argument('--look', help='apresentador: look do avatar do Nei no HeyGen (ex.: computador)')
     ap.add_argument('--teste', action='store_true', help='apresentador: gera só a 1ª cena, para medir o custo')
+    ap.add_argument('--modelo', help='apresentador: vídeo-modelo do estúdio HeyGen que define o look (padrão TEMPLATE-AVATAR16)')
+    ap.add_argument('--seco', action='store_true', help='apresentador: monta o rascunho no estúdio e para antes de Gerar')
+    ap.add_argument('--api', action='store_true', help='apresentador: usa o wallet de API (heygen-cli) em vez do estúdio')
     a = ap.parse_args()
 
     if a.etapa == 'estilos':
@@ -419,9 +422,13 @@ def main():
         cmd_publicar(t, d, a.enviar)
     if a.etapa == 'apresentador':
         from motores import historia
-        if not a.look:
-            sys.exit('apresentador: informe --look (liste com: node ~/.claude/skills/heygen-cli/scripts/heygen.mjs looks)')
-        historia.gerar_apresentador(plano(d), d, a.look, log, so_primeira=a.teste)
+        if a.api:   # wallet de API: só com autorização explícita
+            if not a.look:
+                sys.exit('apresentador --api: informe --look')
+            historia.gerar_apresentador(plano(d), d, a.look, log, so_primeira=a.teste)
+        else:       # padrão: estúdio, créditos da assinatura; o look é o do modelo
+            historia.gerar_apresentador_estudio(plano(d), d, a.modelo or t.get('modelo_heygen', 'TEMPLATE-AVATAR16'),
+                                                log, so_primeira=a.teste, seco=a.seco)
     log(f'[{a.etapa}] {time.time() - t0:.0f}s')
 
 
